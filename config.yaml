@@ -1,0 +1,32 @@
+# Model configuration
+model_type: 'yolov8n'  # yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
+weights_path: 'runs/detect/train/weights/best.pt'  # Path to save/load weights
+
+# Dataset configuration
+dataset_path: 'dataset'  # Root directory of your dataset
+class_names: ['mangrove_tree']  # List of class names
+
+# Training parameters
+epochs: 100
+batch_size: 16
+image_size: 640
+learning_rate: 0.01
+optimizer: 'auto'  # 'SGD', 'Adam', 'AdamW', 'Adamax', 'NAdam', 'RAdam', 'RMSProp', 'auto'
+
+# Hardware configuration
+use_gpu: True  # Set to False to use CPU
+workers: 8  # Number of worker threads for data loading
+
+# Project configuration
+project_name: 'mangrove_detection'
+
+# Augmentation parameters (optional)
+augment: True
+hsv_h: 0.015  # Image HSV-Hue augmentation (fraction)
+hsv_s: 0.7    # Image HSV-Saturation augmentation (fraction)
+hsv_v: 0.4    # Image HSV-Value augmentation (fraction)
+flip_ud: 0.0  # Image flip up-down (probability)
+flip_lr: 0.5  # Image flip left-right (probability)
+
+# Validation parameters
+val_fraction: 0.1  # Fraction of data to use for validation

@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 8
+names: ['- annotate- and create datasets', '- collaborate with your team on computer vision projects', '- collect - organize images', '- export- train- and deploy computer vision models', '- understand and search unstructured image data', '------------------------------', 'Roboflow is an end-to-end computer vision platform that helps you', 'This dataset was exported via roboflow.com on October 30- 2024 at 5-12 AM GMT']
+
+roboflow:
+  workspace: atharva-gadi-akbvq
+  project: mangrove-yegnl-meddt
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/atharva-gadi-akbvq/mangrove-yegnl-meddt/dataset/1

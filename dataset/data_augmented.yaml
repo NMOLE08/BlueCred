@@ -1,0 +1,14 @@
+names:
+- class_0
+- class_1
+- class_2
+- class_3
+- class_4
+- class_5
+- class_6
+- class_7
+nc: 8
+path: d:/object-detection/dataset
+test: images/val
+train: images\augmented
+val: images/val
