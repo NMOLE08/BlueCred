@@ -1,8 +1,0 @@
-2025-09-10 05:31:24,118 - INFO - Using device: cpu
-2025-09-10 05:31:24,124 - INFO - Dataset path: d:/object-detection/dataset
-2025-09-10 05:31:24,124 - INFO - Training images: images/train
-2025-09-10 05:31:24,124 - INFO - Validation images: images/val
-2025-09-10 05:31:24,124 - INFO - Number of classes: 8
-2025-09-10 05:31:24,124 - INFO - Class names: ['class_0', 'class_1', 'class_2', 'class_3', 'class_4', 'class_5', 'class_6', 'class_7']
-2025-09-10 05:31:24,124 - INFO - Initializing model from yolov8n.pt
-2025-09-10 05:31:24,333 - INFO - Starting training...
