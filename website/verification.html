@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="verification.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <title>Verification_page</title>
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="assets/logo.png" alt="logo">
+            </div>
+            <div class="option">
+                <p>HOME</p>
+                <p >VERIFY</p>
+                <p>REPORTS</p>
+            </div>
+            <div class="icons">
+                <button><i class="fa-solid fa-gear"></i></button>
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="blocks">
+            <div class="container1">
+                <h3>FILTER</h3>
+                <div class="dropdown">
+                    <button class="dropbtn">Status <span><i class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">Rejected</a>
+                      <a href="#">Pending</a>
+                      <a href="#">In Review</a>
+                    </div>
+                    </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Project Type<span><i class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">Home</a>
+                      <a href="#">Profile</a>
+                      <a href="#">Settings</a>
+                    </div>
+                    </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Submission <span><i class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">Home</a>
+                      <a href="#">Profile</a>
+                      <a href="#">Settings</a>
+                    </div>
+                    <div class="calender">
+                        <div class="heading">Select Dates</div>
+                        <div class="calendar" id="calendar">
+                            <div class="calendar-header">
+                                <button class="calendar-nav" id="prevMonth">&lt;</button>
+                                <div class="calendar-title" id="monthYear"></div>
+                                <button class="calendar-nav" id="nextMonth">&gt;</button>
+                            </div>
+                            <div class="calendar-weekdays">
+                                <div class="weekday">MO</div>
+                                <div class="weekday">TU</div>
+                                <div class="weekday">WE</div>
+                                <div class="weekday">TH</div>
+                                <div class="weekday">FR</div>
+                                <div class="weekday">SA</div>
+                                <div class="weekday">SU</div>
+                            </div>
+                            <div class="calendar-days" id="calendarDays"></div>
+                        </div>
+                    </div>
+            </div></div>
+            <div class="container2">
+                <h2>Verification Queue</h2>
+                <table>
+                    <tr>
+                        <td class="dark_bg"><b>Project ID</b></td>
+                        <td class="dark_bg"><b>Location</b></td>
+                        <td class="dark_bg"><b>Organization</b></td>
+                        <td class="dark_bg" colspan="2"><b>Status</b></td>
+                    </tr>
+                    <tr>
+                        <td>Sunderbans</td>
+                        <td>West Bengal,India</td>
+                        <td>Organization</td>
+                        <td>Pending</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr>
+                        <td>SeaGrass Meadows</td>
+                        <td>Tamil Nadu,India</td>
+                        <td>Organization</td>
+                        <td>In Review</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr>
+                        <td>Sunderbans</td>
+                        <td>West Bengal,India</td>
+                        <td>Organization</td>
+                        <td>Pending</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr>
+                        <td>SeaGrass Meadows</td>
+                        <td>Tamil Nadu,India</td>
+                        <td>Organization</td>
+                        <td>In Review</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr>
+                        <td>Sunderbans</td>
+                        <td>West Bengal,India</td>
+                        <td>Organization</td>
+                        <td>Pending</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr>
+                        <td>SeaGrass Meadows</td>
+                        <td>Tamil Nadu,India</td>
+                        <td>Organization</td>
+                        <td>In Review</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const dropbtn = dropdown.querySelector('.dropbtn');
+                const dropdownContent = dropdown.querySelector('.dropdown-content');
+                
+                dropbtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Close all other dropdowns
+                    dropdowns.forEach(otherDropdown => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                });
+                
+                // Close dropdown when clicking on dropdown items
+                const dropdownItems = dropdownContent.querySelectorAll('a');
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        dropbtn.textContent = this.textContent + ' <span><i class="fa-solid fa-angle-down"></i></span>';
+                        dropdown.classList.remove('active');
+                    });
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+
+        // Calendar functionality
+        class Calendar {
+            constructor() {
+                this.currentDate = new Date();
+                this.selectedDate = null;
+                this.init();
+            }
+
+            init() {
+                this.renderCalendar();
+                this.bindEvents();
+            }
+
+            renderCalendar() {
+                const monthYear = document.getElementById('monthYear');
+                const calendarDays = document.getElementById('calendarDays');
+                
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                
+                monthYear.textContent = this.getMonthName(month) + ' ' + year;
+                
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startingDayOfWeek = (firstDay.getDay() + 6) % 7; // Convert Sunday=0 to Monday=0
+                
+                calendarDays.innerHTML = '';
+                
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < startingDayOfWeek; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'calendar-day other-month';
+                    calendarDays.appendChild(emptyDay);
+                }
+                
+                // Add days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    dayElement.textContent = day;
+                    
+                    // Check if this is today
+                    const today = new Date();
+                    if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                        dayElement.classList.add('today');
+                    }
+                    
+                    // Check if this is the selected date
+                    if (this.selectedDate && 
+                        year === this.selectedDate.getFullYear() && 
+                        month === this.selectedDate.getMonth() && 
+                        day === this.selectedDate.getDate()) {
+                        dayElement.classList.add('selected');
+                    }
+                    
+                    dayElement.addEventListener('click', () => this.selectDate(new Date(year, month, day)));
+                    calendarDays.appendChild(dayElement);
+                }
+            }
+
+            selectDate(date) {
+                // Remove previous selection
+                const previousSelected = document.querySelector('.calendar-day.selected');
+                if (previousSelected) {
+                    previousSelected.classList.remove('selected');
+                }
+                
+                // Add selection to clicked date
+                event.target.classList.add('selected');
+                this.selectedDate = date;
+            }
+
+            getMonthName(month) {
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return months[month];
+            }
+
+            bindEvents() {
+                document.getElementById('prevMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.renderCalendar();
+                });
+                
+                document.getElementById('nextMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.renderCalendar();
+                });
+            }
+        }
+
+        // Initialize calendar when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            new Calendar();
+        });
+    </script>
+</body>
+
+</html>
