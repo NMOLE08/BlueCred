@@ -14,7 +14,7 @@ learning_rate: 0.01
 optimizer: 'auto'  # 'SGD', 'Adam', 'AdamW', 'Adamax', 'NAdam', 'RAdam', 'RMSProp', 'auto'
 
 # Hardware configuration
-use_gpu: True  # Set to False to use CPU
+use_gpu: True  # Use CUDA for GPU acceleration
 workers: 8  # Number of worker threads for data loading
 
 # Project configuration

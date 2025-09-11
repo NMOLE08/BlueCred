@@ -1,0 +1,6 @@
+train: mangrove.v1i.yolov8/train/images
+val: mangrove.v1i.yolov8/valid/images
+test: mangrove.v1i.yolov8/test/images
+
+nc: 8
+names: ['class_0', 'class_1', 'class_2', 'class_3', 'class_4', 'class_5', 'class_6', 'class_7']

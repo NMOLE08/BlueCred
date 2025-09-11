@@ -7,8 +7,8 @@ data: 'dataset/data_augmented.yaml'  # Using augmented dataset
 model: 'yolov8s.pt'  # Using small model for better performance
 
 # Training parameters
-device: 0  # 0 for GPU, 'cpu' for CPU
-epochs: 200  # Increased for better convergence
+device: 'cuda'  # Use CUDA for GPU acceleration
+epochs: 100  # Set to 100 epochs for improved performance
 patience: 50  # Increased patience for early stopping
 time: None  # Training time in hours
 batch: 32  # Increased batch size if GPU memory allows

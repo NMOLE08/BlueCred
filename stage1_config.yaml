@@ -9,7 +9,7 @@ copy_paste: 0.0
 cos_lr: true
 data: dataset/data_augmented.yaml
 degrees: 10.0
-device: 0
+device: cuda
 epochs: 100
 exist_ok: true
 export:

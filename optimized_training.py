@@ -1,20 +1,18 @@
-from ultralytics import YOLO
 import torch
+from ultralytics import YOLO
 import os
 
 def main():
-    # Clear any existing Python processes that might interfere
-    os.system('taskkill /F /IM python.exe 2>nul')
-    
-    # Print environment info
-    print("\n=== Environment Setup ===")
+    print("=== Environment Setup ===")
     print(f"PyTorch version: {torch.__version__}")
     print(f"CUDA available: {torch.cuda.is_available()}")
-    
     if torch.cuda.is_available():
         print(f"GPU: {torch.cuda.get_device_name(0)}")
         print(f"GPU Memory: {torch.cuda.get_device_properties(0).total_memory/1024**3:.1f}GB")
-    
+
+    # Clear any existing processes
+    os.system('taskkill /F /IM python.exe')
+
     # Initialize model with the last saved weights if available
     weights_dir = os.path.join('runs', 'train', 'mangrove_training_100epochs', 'weights')
     last_weights = os.path.join(weights_dir, 'last.pt')
@@ -25,7 +23,7 @@ def main():
     else:
         print("\nStarting new training with YOLOv8s model...")
         model = YOLO('yolov8s.pt')
-    
+
     # Train the model with optimizations
     print("\n🚀 Starting optimized training with RTX 4090...")
     try:
@@ -37,9 +35,9 @@ def main():
             device=0,  # Use first GPU
             workers=8,  # Increased data loading workers
             project='runs/train',
-            name='mangrove_training_fast',
+            name='mangrove_training_optimized',
             exist_ok=True,
-            resume=True,  # Resume from last checkpoint if available
+            resume=True,
             # Optimized training parameters
             amp=True,  # Mixed precision training
             optimizer='AdamW',  # Better optimizer for this task
@@ -63,14 +61,15 @@ def main():
             # Additional optimizations
             deterministic=False,  # Slightly faster training
             rect=False,  # Rectangular training can be faster
-            # Loss function weights
-            box=7.5,  # Box loss gain
-            cls=0.5,  # Class loss gain
-            dfl=1.5,  # Distribution Focal Loss gain
+            #patience=50,  # Early stopping patience
+            #save_period=5,  # Save checkpoints every 5 epochs
+            #bbox_interval=1,  # Log bounding box metrics every epoch
         )
-        print("\n✅ Training completed successfully!")
+        
+        print("\n=== Training Completed Successfully ===")
+        
     except Exception as e:
-        print(f"\n❌ Error during training: {str(e)}")
+        print(f"\nError during training: {e}")
         import traceback
         traceback.print_exc()
 
