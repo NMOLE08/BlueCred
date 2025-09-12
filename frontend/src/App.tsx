@@ -6,10 +6,7 @@ import Dashboard from './components/Dashboard';
 import ProjectManagement from './components/ProjectManagement';
 import Marketplace from './components/Marketplace';
 import TransactionHistory from './components/TransactionHistory';
-
-// Contract addresses (Latest deployment addresses)
-const CARBON_TOKEN_ADDRESS = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
-const MARKETPLACE_ADDRESS = "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318";
+import { configService, ContractConfig } from './services/configService';
 
 // Contract ABIs (simplified for demo)
 const CARBON_TOKEN_ABI = [
@@ -60,29 +57,68 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [contracts, setContracts] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [config, setConfig] = useState<ContractConfig | null>(null);
+
+  // Load configuration on app start
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const contractConfig = await configService.getConfig();
+        setConfig(contractConfig);
+        console.log('🔧 App loaded with config:', contractConfig);
+      } catch (error) {
+        console.error('❌ Failed to load config:', error);
+      }
+    };
+    
+    loadConfig();
+  }, []);
+
+  // Check network connection
+  useEffect(() => {
+    const checkNetwork = async () => {
+      if (window.ethereum) {
+        try {
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          const expectedChainId = '0x2162'; // 8546 in hex
+          console.log('🌐 Current Chain ID:', chainId, 'Expected:', expectedChainId);
+          
+          if (chainId !== expectedChainId) {
+            console.warn('⚠️ Wrong network! Please switch to Localhost 8546');
+            alert('Please switch MetaMask to "Localhost 8546" network for this DApp to work correctly.');
+          } else {
+            console.log('✅ Connected to correct network');
+          }
+        } catch (error) {
+          console.error('❌ Network check failed:', error);
+        }
+      }
+    };
+    checkNetwork();
+  }, []);
 
   useEffect(() => {
     const initializeContracts = async () => {
-      if (user && window.ethereum) {
+      if (user && window.ethereum && config) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         
         const carbonToken = new ethers.Contract(
-          CARBON_TOKEN_ADDRESS,
+          config.contracts.carbonCreditToken,
           CARBON_TOKEN_ABI,
           signer
         );
         
         const marketplace = new ethers.Contract(
-          MARKETPLACE_ADDRESS,
+          config.contracts.carbonCreditMarketplace,
           MARKETPLACE_ABI,
           signer
         );
         
         const contractsData = { carbonToken, marketplace, provider, signer };
         console.log('🔗 Setting contracts:', {
-          carbonTokenAddress: CARBON_TOKEN_ADDRESS,
-          marketplaceAddress: MARKETPLACE_ADDRESS,
+          carbonTokenAddress: config.contracts.carbonCreditToken,
+          marketplaceAddress: config.contracts.carbonCreditMarketplace,
           userAddress: user.address
         });
         setContracts(contractsData);
@@ -90,7 +126,7 @@ function App() {
     };
     
     initializeContracts();
-  }, [user]);
+  }, [user, config]);
 
   // Listen for account changes
   useEffect(() => {
@@ -113,17 +149,41 @@ function App() {
           const isOwner = address.toLowerCase() === ownerAddress.toLowerCase();
           console.log('👑 Owner check:', { address, ownerAddress, isOwner });
           
-          // Get token balance
-          const CARBON_TOKEN_ABI = ["function balanceOf(address) view returns (uint256)"];
-          let tokenBalance = "0";
-          try {
-            const carbonToken = new ethers.Contract(CARBON_TOKEN_ADDRESS, CARBON_TOKEN_ABI, provider);
-            const balance = await carbonToken.balanceOf(address);
-            tokenBalance = ethers.formatEther(balance);
-          } catch (error) {
-            console.log("Could not fetch token balance:", error);
-            tokenBalance = "0";
-          }
+               // Get token balance using ethers.js contract call
+               let tokenBalance = "0";
+               try {
+                 if (config) {
+                   console.log('🔄 Account change using config:', config);
+                   console.log('🔄 Account change address:', address);
+                   console.log('🔄 Account change contract address:', config.contracts.carbonCreditToken);
+
+                   // Create contract instance
+                   const carbonToken = new ethers.Contract(
+                     config.contracts.carbonCreditToken,
+                     ['function balanceOf(address) view returns (uint256)'],
+                     provider
+                   );
+                   
+                   console.log('🔄 Getting token balance using ethers.js...');
+                   // Get current block number directly from Hardhat node to avoid MetaMask caching issues
+                   const blockResponse = await fetch('http://127.0.0.1:8546', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 })
+                   });
+                   const blockData = await blockResponse.json();
+                   const currentBlock = parseInt(blockData.result, 16);
+                   console.log('🔄 Current block number from Hardhat:', currentBlock);
+                   const balance = await carbonToken.balanceOf(address, { blockTag: currentBlock });
+                   tokenBalance = ethers.formatEther(balance);
+                   console.log('🔄 Account change raw balance:', balance.toString());
+                   console.log('🔄 Account change formatted balance:', tokenBalance);
+                   console.log('🔄 Final tokenBalance variable:', tokenBalance);
+                 }
+               } catch (error) {
+                 console.error("❌ Could not fetch token balance:", error);
+                 tokenBalance = "0";
+               }
           
           const newUser = {
             address,
@@ -144,7 +204,7 @@ function App() {
         }
       };
     }
-  }, []);
+  }, [config]);
 
   const handleWalletConnect = (userData: User) => {
     setUser(userData);
@@ -158,6 +218,10 @@ function App() {
   const refreshUserData = async () => {
     if (window.ethereum && user) {
       try {
+        // First refresh config to get latest contract addresses
+        const newConfig = await configService.refreshConfig();
+        setConfig(newConfig);
+        
         const provider = new ethers.BrowserProvider(window.ethereum!);
         const signer = await provider.getSigner();
         const address = await signer.getAddress();
@@ -170,24 +234,50 @@ function App() {
           const ownerAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
           const isOwner = address.toLowerCase() === ownerAddress.toLowerCase();
         
-        // Get token balance
-        const CARBON_TOKEN_ABI = ["function balanceOf(address) view returns (uint256)"];
-        let tokenBalance = "0";
-        try {
-          const carbonToken = new ethers.Contract(CARBON_TOKEN_ADDRESS, CARBON_TOKEN_ABI, provider);
-          const balance = await carbonToken.balanceOf(address);
-          tokenBalance = ethers.formatEther(balance);
-        } catch (error) {
-          console.log("Could not fetch token balance:", error);
-          tokenBalance = "0";
-        }
+               // Get token balance using ethers.js contract call
+               let tokenBalance = "0";
+               try {
+                 if (newConfig) {
+                   console.log('🔄 Refresh using config:', newConfig);
+                   console.log('🔄 Refresh address:', address);
+                   console.log('🔄 Refresh contract address:', newConfig.contracts.carbonCreditToken);
+
+                   // Create contract instance
+                   const carbonToken = new ethers.Contract(
+                     newConfig.contracts.carbonCreditToken,
+                     ['function balanceOf(address) view returns (uint256)'],
+                     provider
+                   );
+                   
+                   console.log('🔄 Refresh: Getting token balance using ethers.js...');
+                   // Get current block number directly from Hardhat node to avoid MetaMask caching issues
+                   const blockResponse = await fetch('http://127.0.0.1:8546', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 })
+                   });
+                   const blockData = await blockResponse.json();
+                   const currentBlock = parseInt(blockData.result, 16);
+                   console.log('🔄 Refresh: Current block number from Hardhat:', currentBlock);
+                   const balance = await carbonToken.balanceOf(address, { blockTag: currentBlock });
+                   tokenBalance = ethers.formatEther(balance);
+                   console.log('🔄 Refresh raw balance:', balance.toString());
+                   console.log('🔄 Refresh formatted balance:', tokenBalance);
+                   console.log('🔄 Refresh: Final tokenBalance variable:', tokenBalance);
+                 }
+               } catch (error) {
+                 console.error("❌ Could not fetch token balance:", error);
+                 tokenBalance = "0";
+               }
         
+        console.log('🔄 Refresh: Setting user state with tokenBalance:', tokenBalance);
         setUser({
           address,
           balance: parseFloat(ethBalance).toFixed(4),
           tokenBalance,
           isOwner
         });
+        console.log('✅ Refresh: User data refreshed with tokenBalance:', tokenBalance);
       } catch (error) {
         console.error("Error refreshing user data:", error);
       }

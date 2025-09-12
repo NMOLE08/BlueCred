@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
+import { BlockchainUtils } from '../utils/blockchainUtils';
 
 interface DashboardProps {
   user: {
@@ -29,16 +30,16 @@ const Dashboard: React.FC<DashboardProps> = ({ user, contracts }) => {
     try {
       const { carbonToken, marketplace } = contracts;
       
-      // Get user's token balance (not total supply)
-      const userBalance = await carbonToken.balanceOf(user.address);
-      const userTokens = ethers.formatEther(userBalance);
+      // Get user's token balance using direct blockchain call
+      const userTokens = await BlockchainUtils.getTokenBalance(await carbonToken.getAddress(), user.address);
       
-      // Get user's retired tokens
-      const retiredTokens = await carbonToken.getRetiredTokens(user.address);
+      // Get user's retired tokens with specific block number
+      const currentBlock = await BlockchainUtils.getCurrentBlockNumber();
+      const retiredTokens = await carbonToken.getRetiredTokens(user.address, { blockTag: currentBlock });
       const totalRetired = ethers.formatEther(retiredTokens);
       
-      // Get total listings
-      const totalListings = await marketplace.getTotalListings();
+      // Get total listings using direct blockchain call
+      const totalListings = await BlockchainUtils.getTotalListings(await marketplace.getAddress());
       
       setStats({
         totalProjects: 3, // Hardcoded for demo
@@ -71,7 +72,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, contracts }) => {
       description: 'List your carbon credits for sale',
       action: () => {/* Navigate to marketplace tab */},
       icon: '💰',
-      disabled: user.tokenBalance === '0'
+      disabled: parseFloat(stats.totalTokens) === 0
     },
     {
       title: 'Buy Credits',
@@ -85,7 +86,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, contracts }) => {
       description: 'Retire tokens to offset your emissions',
       action: () => {/* Show retire modal */},
       icon: '🔥',
-      disabled: user.tokenBalance === '0'
+      disabled: parseFloat(stats.totalTokens) === 0
     }
   ];
 
@@ -171,11 +172,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user, contracts }) => {
             </div>
             <div className="info-item">
               <span className="label">NCT Tokens:</span>
-              <span className="value">{user.tokenBalance}</span>
+              <span className="value">{stats.totalTokens}</span>
             </div>
             <div className="info-item">
               <span className="label">CO₂e Equivalent:</span>
-              <span className="value">{parseFloat(user.tokenBalance) * 3994} tons</span>
+              <span className="value">{parseFloat(stats.totalTokens) * 3994} tons</span>
             </div>
             <div className="info-item">
               <span className="label">Retired Tokens:</span>

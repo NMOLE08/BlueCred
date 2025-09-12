@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
+import { configService } from '../services/configService';
 
 interface WalletConnectionProps {
   onConnect: (user: {
@@ -40,28 +41,51 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({ onConnect }) => {
       const ownerAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
       const isOwner = address.toLowerCase() === ownerAddress.toLowerCase();
       
-      // Get token balance from contract
-      const CARBON_TOKEN_ADDRESS = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
-      const CARBON_TOKEN_ABI = [
-        "function balanceOf(address) view returns (uint256)"
-      ];
+      // Get token balance from contract using ethers.js
       
-      let tokenBalance = "0";
-      try {
-        const carbonToken = new ethers.Contract(CARBON_TOKEN_ADDRESS, CARBON_TOKEN_ABI, provider);
-        const balance = await carbonToken.balanceOf(address);
-        tokenBalance = ethers.formatEther(balance);
-      } catch (error) {
-        console.log("Could not fetch token balance:", error);
-        tokenBalance = "0";
-      }
+           let tokenBalance = "0";
+           try {
+             // Fetch current contract addresses from backend
+             const config = await configService.getConfig();
+             console.log('🔧 WalletConnection config:', config);
+             console.log('🔧 WalletConnection address:', address);
+             console.log('🔧 WalletConnection contract address:', config.contracts.carbonCreditToken);
+
+             // Create contract instance
+             const carbonToken = new ethers.Contract(
+               config.contracts.carbonCreditToken,
+               ['function balanceOf(address) view returns (uint256)'],
+               provider
+             );
+             
+             console.log('🔧 WalletConnection: Getting token balance using ethers.js...');
+             // Get current block number directly from Hardhat node to avoid MetaMask caching issues
+             const blockResponse = await fetch('http://127.0.0.1:8546', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 })
+             });
+             const blockData = await blockResponse.json();
+             const currentBlock = parseInt(blockData.result, 16);
+             console.log('🔧 WalletConnection: Current block number from Hardhat:', currentBlock);
+             const balance = await carbonToken.balanceOf(address, { blockTag: currentBlock });
+             tokenBalance = ethers.formatEther(balance);
+             console.log('🔧 WalletConnection raw balance:', balance.toString());
+             console.log('🔧 WalletConnection formatted balance:', tokenBalance);
+             console.log('🔧 WalletConnection: Final tokenBalance variable:', tokenBalance);
+           } catch (error) {
+             console.error("❌ Could not fetch token balance:", error);
+             tokenBalance = "0";
+           }
       
+      console.log('🔧 WalletConnection: Calling onConnect with tokenBalance:', tokenBalance);
       onConnect({
         address,
         balance: parseFloat(ethBalance).toFixed(4),
         tokenBalance,
         isOwner
       });
+      console.log('✅ WalletConnection: onConnect called successfully');
       
     } catch (err: any) {
       setError(err.message || 'Failed to connect wallet');
