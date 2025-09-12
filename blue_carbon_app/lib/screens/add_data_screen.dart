@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../services/api_service.dart';
 
 class AddDataScreen extends StatefulWidget {
-  const AddDataScreen({super.key});
+  final String projectId;
+  
+  const AddDataScreen({
+    super.key,
+    required this.projectId,
+  });
 
   @override
   State<AddDataScreen> createState() => _AddDataScreenState();
@@ -37,63 +43,115 @@ class _AddDataScreenState extends State<AddDataScreen> {
     
     if (index == 0) {
       // Navigate to Home
-      if (ModalRoute.of(context)?.settings.name != '/home') {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      Navigator.pushReplacementNamed(context, '/home');
     } else if (index == 2) {
       // Navigate to Profile
-      Navigator.pushReplacementNamed(context, '/login');
-    } else if (index == 1) {
-      // If already on Add Data screen, just update the index
-      setState(() {
-        _selectedIndex = index;
-      });
+      Navigator.pushReplacementNamed(context, '/profile');
     }
   }
 
   Future<void> _pickPhoto() async {
-    final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
-    if (photo != null) {
-      setState(() {
-        _photos.add(File(photo.path));
-      });
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          _photos.add(File(image.path));
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to pick image: ${e.toString()}')),
+        );
+      }
     }
   }
 
   Future<void> _pickVideo() async {
-    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      setState(() {
-        _videos.add(File(video.path));
-      });
+    try {
+      final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+      if (video != null) {
+        setState(() {
+          _videos.add(File(video.path));
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to pick video: ${e.toString()}')),
+        );
+      }
     }
   }
 
-  void _submitData() {
+  Future<void> _submitData() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isSubmitting = true;
       });
       
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        // Prepare the data to be sent
+        final data = {
+          'projectId': widget.projectId,
+          'dataType': _dataType,
+          'healthStatus': _healthStatus,
+          'saplingsPlanted': int.tryParse(_saplingsController.text) ?? 0,
+          'avgSaplingHeight': double.tryParse(_heightController.text) ?? 0.0,
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+        
+        // Call the API service
+        final result = await ApiService.submitProjectData(
+          projectId: widget.projectId,
+          data: data,
+          photos: _photos,
+          videos: _videos,
+        );
+        
         setState(() {
           _isSubmitting = false;
         });
         
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data submitted successfully!')),
-        );
-        
-        // Reset form
-        _formKey.currentState!.reset();
-        _photos.clear();
-        _videos.clear();
-      });
+        if (mounted) {
+          if (result['success'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Data submitted successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            // Clear the form
+            _formKey.currentState!.reset();
+            _photos.clear();
+            _videos.clear();
+            _dataType = null;
+            _healthStatus = null;
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(result['message'] ?? 'Failed to submit data'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        setState(() {
+          _isSubmitting = false;
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
-  
+
   @override
   void dispose() {
     _saplingsController.dispose();
@@ -104,343 +162,301 @@ class _AddDataScreenState extends State<AddDataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF005AC6), Color(0xFF003D81)],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
+      appBar: AppBar(
+        title: const Text('Add Data'),
+        backgroundColor: const Color(0xFF005AC6),
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Show project ID for reference
+            if (widget.projectId.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  'Project ID: ${widget.projectId}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+              ),
+            Form(
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Custom App Bar
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/logo.png',
-                            height: 40,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Icon(Icons.eco, size: 40, color: Colors.white);
-                            },
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'BlueCred',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                  // Data Type Dropdown
+                  const Text(
+                    'Data Type',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: _dataType,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
                       ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                              size: 30,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    hint: const Text('Select data type'),
+                    items: _dataTypes.map((type) {
+                      return DropdownMenuItem(
+                        value: type,
+                        child: Text(type),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _dataType = value;
+                      });
+                    },
+                    validator: (value) => value == null ? 'Please select a data type' : null,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Health Status Dropdown
+                  const Text(
+                    'Health Status',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: _healthStatus,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    hint: const Text('Select health status'),
+                    items: _healthStatuses.map((status) {
+                      return DropdownMenuItem(
+                        value: status,
+                        child: Text(status),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _healthStatus = value;
+                      });
+                    },
+                    validator: (value) => value == null ? 'Please select health status' : null,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Saplings Planted Field
+                  TextFormField(
+                    controller: _saplingsController,
+                    decoration: InputDecoration(
+                      labelText: 'Number of Saplings Planted',
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the number of saplings';
+                      }
+                      if (int.tryParse(value) == null) {
+                        return 'Please enter a valid number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Average Sapling Height Field
+                  TextFormField(
+                    controller: _heightController,
+                    decoration: InputDecoration(
+                      labelText: 'Average Sapling Height (cm)',
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the average height';
+                      }
+                      if (double.tryParse(value) == null) {
+                        return 'Please enter a valid number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Photos Section
+                  const Text(
+                    'Add Photos',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _pickPhoto,
+                          icon: const Icon(Icons.add_photo_alternate),
+                          label: const Text('Add Photo'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF005AC6),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            onPressed: _pickPhoto,
                           ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.search,
-                              color: Colors.white,
-                              size: 30,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _pickVideo,
+                          icon: const Icon(Icons.videocam),
+                          label: const Text('Add Video'),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFF005AC6)),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            onPressed: () {
-                              // TODO: Add search functionality
-                            },
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
-                  Container(
-                    padding: const EdgeInsets.all(24.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
+                  const SizedBox(height: 8),
+                  // Display selected photos/videos
+                  if (_photos.isNotEmpty || _videos.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Selected Media:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'General Details',
-                            style: TextStyle(
-                              color: Color(0xFF005AC6),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Project Name : Seagrass Meadows',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text(
-                            'Project ID : STK1234',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 20),
-                          DropdownButtonFormField<String>(
-                            value: _dataType,
-                            decoration: const InputDecoration(
-                              labelText: 'Data type',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15),
-                                ),
-                              ),
-                            ),
-                            items: _dataTypes.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _dataType = newValue;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Please select a data type';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 30),
-                          const Text(
-                            'Observation Metric',
-                            style: TextStyle(
-                              color: Color(0xFF005AC6),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          DropdownButtonFormField<String>(
-                            value: _healthStatus,
-                            decoration: const InputDecoration(
-                              labelText: 'Health Status',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15),
-                                ),
-                              ),
-                            ),
-                            items: _healthStatuses.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _healthStatus = newValue;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Please select a health status';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          TextFormField(
-                            controller: _saplingsController,
-                            decoration: const InputDecoration(
-                              labelText: 'No. of saplings planted',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15),
-                                ),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter number of saplings';
-                              }
-                              if (int.tryParse(value) == null) {
-                                return 'Please enter a valid number';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          TextFormField(
-                            controller: _heightController,
-                            decoration: const InputDecoration(
-                              labelText: 'Avg. Sapling Height (In cm)',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15),
-                                ),
-                              ),
-                            ),
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a value';
-                              }
-                              if (double.tryParse(value) == null) {
-                                return 'Please enter a valid number';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 30),
-                          const Text(
-                            'Visual Verification',
-                            style: TextStyle(
-                              color: Color(0xFF005AC6),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ..._photos.map((file) {
+                          return Stack(
                             children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    await _pickPhoto();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF005AC6),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Upload Photo (${_photos.length})',
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ),
+                              Image.file(
+                                file,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () async {
-                                    await _pickVideo();
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: IconButton(
+                                  icon: const Icon(Icons.close, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      _photos.remove(file);
+                                    });
                                   },
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(
-                                      color: Color(0xFF005AC6),
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  child: Text('Upload Video (${_videos.length})'),
                                 ),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 30),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _isSubmitting ? null : _submitData,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF005AC6),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                          );
+                        }).toList(),
+                        ..._videos.map((file) {
+                          return Stack(
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                color: Colors.grey[300],
+                                child: const Center(
+                                  child: Icon(Icons.videocam, size: 30, color: Colors.grey),
                                 ),
                               ),
-                              child: _isSubmitting
-                                  ? const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
-                                  : const Text(
-                                      'SUBMIT',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                            ),
-                          ),
-                        ],
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: IconButton(
+                                  icon: const Icon(Icons.close, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      _videos.remove(file);
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+
+                  // Submit Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitData,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF005AC6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
+                      child: _isSubmitting
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('SUBMIT', style: TextStyle(fontSize: 16)),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         backgroundColor: const Color(0xFF1D1F20),
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.white,
-        selectedLabelStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        unselectedLabelStyle: const TextStyle(color: Colors.white),
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        items: [
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        items: const [
           BottomNavigationBarItem(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _selectedIndex == 0 ? Colors.white : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.home_outlined),
-            ),
+            icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _selectedIndex == 1 ? Colors.white : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.add_circle),
-            ),
+            icon: Icon(Icons.add_circle_outline),
             label: 'Add Data',
           ),
           BottomNavigationBarItem(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _selectedIndex == 2 ? Colors.white : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.person_outline),
-            ),
+            icon: Icon(Icons.person_outline),
             label: 'Profile',
           ),
         ],

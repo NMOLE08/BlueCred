@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="verification.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <title>Verification_page</title>
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="assets/logo.png" alt="logo">
+            </div>
+            <div class="option">
+                <p><a href="index.html" class="nav-link">HOME</a></p>
+                <p><a href="verification.html" class="nav-link">VERIFY</a></p>
+                <p><a href="#" class="nav-link">REPORTS</a></p>
+            </div>
+            <div class="icons">
+                <button><i class="fa-solid fa-gear"></i></button>
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="blocks">
+            <div class="container1">
+                <h3>FILTER</h3>
+                <div class="dropdown">
+                    <button class="dropbtn"><span>Status <i id = "dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">Rejected</a>
+                      <a href="#">Pending</a>
+                      <a href="#">In Review</a>
+                    </div>
+                    </div>
+                <div class="dropdown">
+                    <button class="dropbtn"><span>Project Type <i id = "dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">Mangrove</a>
+                      <a href="#">Seagrass</a>
+                      <a href="#">Salt Marsh</a>
+                    </div>
+                    </div>
+                <div class="dropdown">
+                    <button class="dropbtn"><span>Submission <i id = "dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">This Week</a>
+                      <a href="#">This Month</a>
+                      <a href="#">This Year</a>
+                    </div>
+                    <div class="calender">
+                        <div class="heading">Select Dates</div>
+                        <div class="calendar" id="calendar">
+                            <div class="calendar-header">
+                                <button class="calendar-nav" id="prevMonth">&lt;</button>
+                                <div class="calendar-title" id="monthYear"></div>
+                                <button class="calendar-nav" id="nextMonth">&gt;</button>
+                            </div>
+                            <div class="calendar-weekdays">
+                                <div class="weekday">MO</div>
+                                <div class="weekday">TU</div>
+                                <div class="weekday">WE</div>
+                                <div class="weekday">TH</div>
+                                <div class="weekday">FR</div>
+                                <div class="weekday">SA</div>
+                                <div class="weekday">SU</div>
+                            </div>
+                            <div class="calendar-days" id="calendarDays"></div>
+                        </div>
+                    </div>
+            </div></div>
+            <div class="container2">
+                <h2>Verification Queue</h2>
+                <table>
+                    <tr>
+                        <td class="dark_bg"><b>Project ID</b></td>
+                        <td class="dark_bg"><b>Location</b></td>
+                        <td class="dark_bg"><b>Organization</b></td>
+                        <td class="dark_bg" colspan="2"><b>Status</b></td>
+                    </tr>
+                    <tr data-status="Pending" data-project="Mangrove" data-submission="This Week">
+                        <td>Sunderbans</td>
+                        <td>West Bengal,India</td>
+                        <td>Organization</td>
+                        <td>Pending</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr data-status="In Review" data-project="Seagrass" data-submission="This Week">
+                        <td>SeaGrass Meadows</td>
+                        <td>Tamil Nadu,India</td>
+                        <td>Organization</td>
+                        <td>In Review</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr data-status="Rejected" data-project="Mangrove" data-submission="This Month">
+                        <td>Mangrove Project 1</td>
+                        <td>Odisha,India</td>
+                        <td>Organization</td>
+                        <td>Rejected</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr data-status="Pending" data-project="Salt Marsh" data-submission="This Year">
+                        <td>Salt Marsh Project</td>
+                        <td>Gujarat,India</td>
+                        <td>Organization</td>
+                        <td>Pending</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr data-status="In Review" data-project="Mangrove" data-submission="This Week">
+                        <td>Mangrove Project 2</td>
+                        <td>Andhra Pradesh,India</td>
+                        <td>Organization</td>
+                        <td>In Review</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                    <tr data-status="Rejected" data-project="Seagrass" data-submission="This Month">
+                        <td>Seagrass Project</td>
+                        <td>Lakshadweep,India</td>
+                        <td>Organization</td>
+                        <td>Rejected</td>
+                        <td><button>Review</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Store filter state
+        const filters = {
+            status: null,
+            project: null,
+            submission: null
+        };
+
+        // Filter function
+        function applyFilters() {
+            const rows = document.querySelectorAll('table tr[data-status]');
+            
+            // Get all dropdowns
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            // Get the filter values from each dropdown
+            const statusBtn = dropdowns[0].querySelector('.dropbtn');
+            const projectBtn = dropdowns[1].querySelector('.dropbtn');
+            const submissionBtn = dropdowns[2].querySelector('.dropbtn');
+            
+            const statusFilter = statusBtn ? statusBtn.getAttribute('data-selected') : null;
+            const projectFilter = projectBtn ? projectBtn.getAttribute('data-selected') : null;
+            const submissionFilter = submissionBtn ? submissionBtn.getAttribute('data-selected') : null;
+
+            let hasVisibleRows = false;
+            
+            rows.forEach(row => {
+                const status = row.getAttribute('data-status');
+                const project = row.getAttribute('data-project');
+                const submission = row.getAttribute('data-submission');
+                
+                const statusMatch = !statusFilter || status === statusFilter;
+                const projectMatch = !projectFilter || project === projectFilter;
+                const submissionMatch = !submissionFilter || submission === submissionFilter;
+                
+                if (statusMatch && projectMatch && submissionMatch) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Show a message if no rows match the filter
+            const noResultsRow = document.getElementById('noResults');
+            if (!hasVisibleRows) {
+                if (!noResultsRow) {
+                    const tbody = document.querySelector('table tbody') || document.querySelector('table');
+                    const noResults = document.createElement('tr');
+                    noResults.id = 'noResults';
+                    noResults.innerHTML = '<td colspan="5" style="text-align: center; padding: 20px;">No projects match the selected filters</td>';
+                    tbody.appendChild(noResults);
+                }
+            } else if (noResultsRow) {
+                noResultsRow.remove();
+            }
+        }
+
+        // Reset filters
+        function resetFilters() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            // Reset each dropdown button
+            dropdowns.forEach((dropdown, index) => {
+                const dropbtn = dropdown.querySelector('.dropbtn');
+                let defaultText = '';
+                
+                // Set the appropriate default text for each dropdown
+                if (index === 0) defaultText = 'Status';
+                else if (index === 1) defaultText = 'Project Type';
+                else if (index === 2) defaultText = 'Submission';
+                
+                dropbtn.innerHTML = `<span>${defaultText} <i class="fa-solid fa-angle-down"></i></span>`;
+                dropbtn.removeAttribute('data-selected');
+            });
+            
+            // Show all rows
+            document.querySelectorAll('table tr[data-status]').forEach(row => {
+                row.style.display = '';
+            });
+            
+            // Remove no results message if it exists
+            const noResultsRow = document.getElementById('noResults');
+            if (noResultsRow) {
+                noResultsRow.remove();
+            }
+        }
+
+        // Initialize dropdowns and filters
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            // Add reset button
+            const filterSection = document.querySelector('.container1');
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'reset-btn';
+            resetBtn.textContent = 'Reset Filters';
+            resetBtn.addEventListener('click', resetFilters);
+            filterSection.appendChild(resetBtn);
+            
+            // Initialize dropdowns
+            dropdowns.forEach((dropdown, index) => {
+                const dropbtn = dropdown.querySelector('.dropbtn');
+                const dropdownContent = dropdown.querySelector('.dropdown-content');
+                
+                dropbtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Close all other dropdowns
+                    dropdowns.forEach(otherDropdown => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                });
+                
+                // Handle dropdown item selection
+                const dropdownItems = dropdownContent.querySelectorAll('a');
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const selectedValue = this.textContent.trim();
+                        const currentText = dropbtn.querySelector('span').textContent.split(' ')[0]; // Get the first word (Status/Project Type/Submission)
+                        
+                        // Update the button text and store the selected value
+                        dropbtn.innerHTML = `<span>${currentText}: ${selectedValue} <i class="fa-solid fa-angle-down"></i></span>`;
+                        dropbtn.setAttribute('data-selected', selectedValue);
+                        dropdown.classList.remove('active');
+                        
+                        // Apply filters
+                        applyFilters();
+                    });
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+
+        // Calendar functionality
+        class Calendar {
+            constructor() {
+                this.currentDate = new Date();
+                this.selectedDate = null;
+                this.init();
+            }
+
+            init() {
+                this.renderCalendar();
+                this.bindEvents();
+            }
+
+            renderCalendar() {
+                const monthYear = document.getElementById('monthYear');
+                const calendarDays = document.getElementById('calendarDays');
+                
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                
+                monthYear.textContent = this.getMonthName(month) + ' ' + year;
+                
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startingDayOfWeek = (firstDay.getDay() + 6) % 7; // Convert Sunday=0 to Monday=0
+                
+                calendarDays.innerHTML = '';
+                
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < startingDayOfWeek; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'calendar-day other-month';
+                    calendarDays.appendChild(emptyDay);
+                }
+                
+                // Add days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    dayElement.textContent = day;
+                    
+                    // Check if this is today
+                    const today = new Date();
+                    if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                        dayElement.classList.add('today');
+                    }
+                    
+                    // Check if this is the selected date
+                    if (this.selectedDate && 
+                        year === this.selectedDate.getFullYear() && 
+                        month === this.selectedDate.getMonth() && 
+                        day === this.selectedDate.getDate()) {
+                        dayElement.classList.add('selected');
+                    }
+                    
+                    dayElement.addEventListener('click', () => this.selectDate(new Date(year, month, day)));
+                    calendarDays.appendChild(dayElement);
+                }
+            }
+
+            selectDate(date) {
+                // Remove previous selection
+                const previousSelected = document.querySelector('.calendar-day.selected');
+                if (previousSelected) {
+                    previousSelected.classList.remove('selected');
+                }
+                
+                // Add selection to clicked date
+                event.target.classList.add('selected');
+                this.selectedDate = date;
+            }
+
+            getMonthName(month) {
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return months[month];
+            }
+
+            bindEvents() {
+                document.getElementById('prevMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.renderCalendar();
+                });
+                
+                document.getElementById('nextMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.renderCalendar();
+                });
+            }
+        }
+
+        // Initialize calendar when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            new Calendar();
+        });
+    </script>
+</body>
+
+</html>
