@@ -50,19 +50,21 @@
                     </div>
                     </div>
                 <div class="dropdown">
-                    <button class="dropbtn"><span>Submission <i id = "dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
+                    <button class="dropbtn"><span>Submission <i id="dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
                     <div class="dropdown-content">
                       <a href="#">This Week</a>
                       <a href="#">This Month</a>
                       <a href="#">This Year</a>
                     </div>
+                </div>
+                <div class="calendar-container">
                     <div class="calender">
                         <div class="heading">Select Dates</div>
                         <div class="calendar" id="calendar">
                             <div class="calendar-header">
-                                <button class="calendar-nav" id="prevMonth">&lt;</button>
+                                <button type="button" class="calendar-nav" id="prevMonth">&lt;</button>
                                 <div class="calendar-title" id="monthYear"></div>
-                                <button class="calendar-nav" id="nextMonth">&gt;</button>
+                                <button type="button" class="calendar-nav" id="nextMonth">&gt;</button>
                             </div>
                             <div class="calendar-weekdays">
                                 <div class="weekday">MO</div>
@@ -76,58 +78,65 @@
                             <div class="calendar-days" id="calendarDays"></div>
                         </div>
                     </div>
-            </div></div>
+                </div>
+                <!-- Reset button will be added here by JavaScript -->
+            </div>
             <div class="container2">
                 <h2>Verification Queue</h2>
                 <table>
-                    <tr>
-                        <td class="dark_bg"><b>Project ID</b></td>
-                        <td class="dark_bg"><b>Location</b></td>
-                        <td class="dark_bg"><b>Organization</b></td>
-                        <td class="dark_bg" colspan="2"><b>Status</b></td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th class="dark_bg">Project ID</th>
+                            <th class="dark_bg">Location</th>
+                            <th class="dark_bg">Organization</th>
+                            <th class="dark_bg">Status</th>
+                            <th class="dark_bg">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     <tr data-status="Pending" data-project="Mangrove" data-submission="This Week">
                         <td>Sunderbans</td>
-                        <td>West Bengal,India</td>
+                        <td>West Bengal, India</td>
                         <td>Organization</td>
                         <td>Pending</td>
-                        <td><button>Review</button></td>
+                        <td><button class="review-btn">Review</button></td>
                     </tr>
                     <tr data-status="In Review" data-project="Seagrass" data-submission="This Week">
                         <td>SeaGrass Meadows</td>
-                        <td>Tamil Nadu,India</td>
+                        <td>Tamil Nadu, India</td>
                         <td>Organization</td>
                         <td>In Review</td>
-                        <td><button>Review</button></td>
+                        <td><button class="review-btn">Review</button></td>
                     </tr>
                     <tr data-status="Rejected" data-project="Mangrove" data-submission="This Month">
                         <td>Mangrove Project 1</td>
-                        <td>Odisha,India</td>
+                        <td>Odisha, India</td>
                         <td>Organization</td>
                         <td>Rejected</td>
-                        <td><button>Review</button></td>
+                        <td><button class="review-btn">Review</button></td>
                     </tr>
                     <tr data-status="Pending" data-project="Salt Marsh" data-submission="This Year">
                         <td>Salt Marsh Project</td>
-                        <td>Gujarat,India</td>
+                        <td>Gujarat, India</td>
                         <td>Organization</td>
                         <td>Pending</td>
-                        <td><button>Review</button></td>
+                        <td><button class="review-btn">Review</button></td>
                     </tr>
                     <tr data-status="In Review" data-project="Mangrove" data-submission="This Week">
                         <td>Mangrove Project 2</td>
-                        <td>Andhra Pradesh,India</td>
+                        <td>Andhra Pradesh, India</td>
                         <td>Organization</td>
                         <td>In Review</td>
-                        <td><button>Review</button></td>
+                        <td><button class="review-btn">Review</button></td>
                     </tr>
                     <tr data-status="Rejected" data-project="Seagrass" data-submission="This Month">
                         <td>Seagrass Project</td>
-                        <td>Lakshadweep,India</td>
+                        <td>Lakshadweep, India</td>
                         <td>Organization</td>
                         <td>Rejected</td>
-                        <td><button>Review</button></td>
+                        <td><button class="review-btn">Review</button></td>
                     </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -373,7 +382,40 @@
 
         // Initialize calendar when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            new Calendar();
+            // Initialize calendar
+            const calendar = new Calendar();
+            
+            // Add click event listeners to all Review buttons
+            const reviewButtons = document.querySelectorAll('.review-btn');
+            reviewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    window.location.href = 'report.html';
+                });
+            });
+
+            // Add event listener to reset button
+            const resetBtn = document.querySelector('.reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    // Reset all dropdowns
+                    const dropdowns = document.querySelectorAll('.dropdown');
+                    dropdowns.forEach(dropdown => {
+                        const dropbtn = dropdown.querySelector('.dropbtn');
+                        if (dropbtn) {
+                            const textSpan = dropbtn.querySelector('span');
+                            if (textSpan) {
+                                const defaultText = textSpan.textContent.split(':')[0].trim();
+                                textSpan.innerHTML = `${defaultText} <i class="fa-solid fa-angle-down"></i>`;
+                            }
+                        }
+                    });
+
+                    // Reset calendar selection
+                    if (calendar && typeof calendar.selectDate === 'function') {
+                        calendar.selectDate(null);
+                    }
+                });
+            }
         });
     </script>
 </body>

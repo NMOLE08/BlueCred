@@ -22,16 +22,31 @@ header .navbar {
     display: flex;
 }
 
-.navbar .option p{
-    padding: 0 80px;
+.navbar .option p {
+    padding: 0 40px;
+    margin: 0;
+}
+
+.nav-link {
     font-family: Anton;
     font-weight: 400;
-    font-style: Regular;
     font-size: 24px;
-    leading-trim: NONE;
     line-height: 101px;
     letter-spacing: 0%;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: block;
+    height: 100%;
+}
 
+.nav-link:hover {
+    color: #00489A;
+    text-decoration: none;
+}
+
+.nav-link.active {
+    color: #00489A;
 }
 
 .navbar .icons {
