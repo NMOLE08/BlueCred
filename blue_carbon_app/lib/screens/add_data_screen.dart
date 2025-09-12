@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class AddDataScreen extends StatefulWidget {
   const AddDataScreen({super.key});
@@ -8,23 +10,95 @@ class AddDataScreen extends StatefulWidget {
 }
 
 class _AddDataScreenState extends State<AddDataScreen> {
-  // A key to uniquely identify the form
+  // Form key and controllers
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _saplingsController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  
+  // State variables
   String? _dataType;
   String? _healthStatus;
+  int _selectedIndex = 1; // Default to Add Data tab (index 1)
+  bool _isSubmitting = false;
+  
+  // Image picker
+  final ImagePicker _picker = ImagePicker();
+  List<File> _photos = [];
+  List<File> _videos = [];
 
   // Dummy data for dropdowns
   final List<String> _dataTypes = ['Project', 'Observation'];
   final List<String> _healthStatuses = ['Good', 'Fair', 'Poor'];
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    
+    if (index == 0) {
+      // Navigate to Home
+      if (ModalRoute.of(context)?.settings.name != '/home') {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } else if (index == 2) {
+      // Navigate to Profile
+      Navigator.pushReplacementNamed(context, '/login');
+    } else if (index == 1) {
+      // If already on Add Data screen, just update the index
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  Future<void> _pickPhoto() async {
+    final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
+    if (photo != null) {
+      setState(() {
+        _photos.add(File(photo.path));
+      });
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      setState(() {
+        _videos.add(File(video.path));
+      });
+    }
+  }
+
   void _submitData() {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      // TODO: Add logic to save data and add it to dummy_projects.dart
-      print('Form submitted!');
-      print('Data Type: $_dataType');
-      print('Health Status: $_healthStatus');
+      setState(() {
+        _isSubmitting = true;
+      });
+      
+      // Simulate API call
+      Future.delayed(const Duration(seconds: 2), () {
+        setState(() {
+          _isSubmitting = false;
+        });
+        
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Data submitted successfully!')),
+        );
+        
+        // Reset form
+        _formKey.currentState!.reset();
+        _photos.clear();
+        _videos.clear();
+      });
     }
+  }
+  
+  @override
+  void dispose() {
+    _saplingsController.dispose();
+    _heightController.dispose();
+    super.dispose();
   }
 
   @override
@@ -52,8 +126,11 @@ class _AddDataScreenState extends State<AddDataScreen> {
                       Row(
                         children: [
                           Image.asset(
-                            'assets/logo.png', // Placeholder for the logo
+                            'assets/images/logo.png',
                             height: 40,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(Icons.eco, size: 40, color: Colors.white);
+                            },
                           ),
                           const SizedBox(width: 8),
                           const Text(
@@ -74,9 +151,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                               color: Colors.white,
                               size: 30,
                             ),
-                            onPressed: () {
-                              // TODO: Add camera functionality
-                            },
+                            onPressed: _pickPhoto,
                           ),
                           const SizedBox(width: 8),
                           IconButton(
@@ -200,6 +275,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
+                            controller: _saplingsController,
                             decoration: const InputDecoration(
                               labelText: 'No. of saplings planted',
                               border: OutlineInputBorder(
@@ -211,13 +287,17 @@ class _AddDataScreenState extends State<AddDataScreen> {
                             keyboardType: TextInputType.number,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter a value';
+                                return 'Please enter number of saplings';
+                              }
+                              if (int.tryParse(value) == null) {
+                                return 'Please enter a valid number';
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
+                            controller: _heightController,
                             decoration: const InputDecoration(
                               labelText: 'Avg. Sapling Height (In cm)',
                               border: OutlineInputBorder(
@@ -226,10 +306,13 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                 ),
                               ),
                             ),
-                            keyboardType: TextInputType.number,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter a value';
+                              }
+                              if (double.tryParse(value) == null) {
+                                return 'Please enter a valid number';
                               }
                               return null;
                             },
@@ -248,8 +331,8 @@ class _AddDataScreenState extends State<AddDataScreen> {
                             children: [
                               Expanded(
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    // TODO: Add photo upload functionality
+                                  onPressed: () async {
+                                    await _pickPhoto();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF005AC6),
@@ -257,17 +340,17 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                       borderRadius: BorderRadius.circular(30),
                                     ),
                                   ),
-                                  child: const Text(
-                                    'Upload Photo',
-                                    style: TextStyle(color: Colors.white),
+                                  child: Text(
+                                    'Upload Photo (${_photos.length})',
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: OutlinedButton(
-                                  onPressed: () {
-                                    // TODO: Add video upload functionality
+                                  onPressed: () async {
+                                    await _pickVideo();
                                   },
                                   style: OutlinedButton.styleFrom(
                                     side: const BorderSide(
@@ -277,7 +360,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                       borderRadius: BorderRadius.circular(30),
                                     ),
                                   ),
-                                  child: const Text('Upload Video'),
+                                  child: Text('Upload Video (${_videos.length})'),
                                 ),
                               ),
                             ],
@@ -286,7 +369,7 @@ class _AddDataScreenState extends State<AddDataScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: _submitData,
+                              onPressed: _isSubmitting ? null : _submitData,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF005AC6),
                                 padding: const EdgeInsets.symmetric(
@@ -296,10 +379,14 @@ class _AddDataScreenState extends State<AddDataScreen> {
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
-                              child: const Text(
-                                'SUBMIT',
-                                style: TextStyle(color: Colors.white),
-                              ),
+                              child: _isSubmitting
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : const Text(
+                                      'SUBMIT',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                             ),
                           ),
                         ],
@@ -313,13 +400,49 @@ class _AddDataScreenState extends State<AddDataScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF005AC6),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.photo_album), label: 'Data'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        backgroundColor: const Color(0xFF1D1F20),
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.white,
+        selectedLabelStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        unselectedLabelStyle: const TextStyle(color: Colors.white),
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _selectedIndex == 0 ? Colors.white : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.home_outlined),
+            ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _selectedIndex == 1 ? Colors.white : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.add_circle),
+            ),
+            label: 'Add Data',
+          ),
+          BottomNavigationBarItem(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _selectedIndex == 2 ? Colors.white : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.person_outline),
+            ),
+            label: 'Profile',
+          ),
         ],
       ),
     );

@@ -7,28 +7,28 @@ const List<Project> dummyProjects = [
   Project(
     name: 'Sunderbans',
     location: 'West Bengal,India',
-    imageUrl: 'assets/images/sunderbans.jpg',
+    imageUrl: 'assets/images/sunderbans.jpg.png',
   ),
   Project(
     name: 'Seagrass Meadows',
     location: 'Tamil Nadu, India',
-    imageUrl: 'assets/images/seagrass.jpg',
+    imageUrl: 'assets/images/seagrass_meadows.jpg.png',
   ),
   Project(
     name: 'Sunderbans',
     location: 'West Bengal,India',
-    imageUrl: 'assets/images/sunderbans.jpg',
+    imageUrl: 'assets/images/sunderbans.jpg.png',
   ),
   
   Project(
     name: 'Seagrass Meadows',
     location: 'Tamil Nadu, India',
-    imageUrl: 'assets/images/seagrass.jpg',
+    imageUrl: 'assets/images/seagrass_meadows.jpg.png',
   ),
   Project(
     name: 'Sunderbans',
     location: 'West Bengal,India',
-    imageUrl: 'assets/images/sunderbans.jpg',
+    imageUrl: 'assets/images/sunderbans.jpg.png',
   ),
   // Add more dummy projects as needed
 ];

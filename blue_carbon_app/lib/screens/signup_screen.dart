@@ -83,8 +83,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/logo.png', // Placeholder for the logo
+                      'assets/images/logo.png',
                       height: 50,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.eco, size: 50, color: Colors.white);
+                      },
                     ),
                     const SizedBox(width: 10),
                     Text(

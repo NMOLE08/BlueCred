@@ -52,13 +52,20 @@ class _HomepageScreenState extends State<HomepageScreen> {
                     Row(
                       children: [
                         Image.asset(
-                          'assets/logo.png', // Placeholder for the logo
+                          'assets/images/logo.png',
                           height: 40,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(Icons.eco, size: 40, color: Colors.white);
+                          },
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        const Text(
                           'BlueCred',
-                          style: Theme.of(context).textTheme.headlineLarge,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -91,9 +98,13 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 ),
                 const SizedBox(height: 30),
                 // Welcome message and user name
-                Text(
+                const Text(
                   'Hello, Anmol k.',
-                  style: Theme.of(context).textTheme.headlineLarge,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -120,17 +131,61 @@ class _HomepageScreenState extends State<HomepageScreen> {
         ),
       ),
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF005AC6),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.photo_album), label: 'Data'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey[400],
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          unselectedLabelStyle: const TextStyle(color: Colors.grey),
+          items: [
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _selectedIndex == 0 ? const Color(0xFF005AC6) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.home_outlined),
+              ),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _selectedIndex == 1 ? const Color(0xFF005AC6) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.add_circle_outline),
+              ),
+              label: 'Add Data',
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _selectedIndex == 2 ? const Color(0xFF005AC6) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.person_outline),
+              ),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -163,7 +218,7 @@ class _ProjectCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
+              child: Image.asset(
                 project.imageUrl,
                 width: 100,
                 height: 100,
@@ -171,8 +226,8 @@ class _ProjectCard extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) => Container(
                   width: 100,
                   height: 100,
-                  color: Colors.grey,
-                  child: const Icon(Icons.broken_image, color: Colors.white),
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.photo, color: Colors.grey, size: 40),
                 ),
               ),
             ),
@@ -201,7 +256,12 @@ class _ProjectCard extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // TODO: Add "Add data" functionality
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddDataScreen(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF005AC6),

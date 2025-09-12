@@ -29,14 +29,37 @@ final theme = ThemeData(
 );
 
 void main() {
-  runApp(const App());
+  // Enable performance overlay for debugging
+  runApp(
+    const App(
+      showPerformanceOverlay: false, // Set to true to show performance overlay
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App({
+    super.key,
+    this.showPerformanceOverlay = false,
+    this.debugShowCheckedModeBanner = false,
+  });
+
+  final bool showPerformanceOverlay;
+  final bool debugShowCheckedModeBanner;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(theme: theme, home: const WelcomeScreen());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1D1F20),
+          brightness: Brightness.light,
+        ),
+      ),
+      home: const WelcomeScreen(),
+    );
   }
 }
