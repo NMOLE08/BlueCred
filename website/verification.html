@@ -9,6 +9,89 @@
         href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Status indicators */
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        .status.pending {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+        
+        .status.in-review,
+        .status.under-review {
+            background-color: #CCE5FF;
+            color: #004085;
+        }
+        
+        .status.approved {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+        
+        .status.rejected {
+            background-color: #F8D7DA;
+            color: #721C24;
+        }
+        
+        .status.unknown {
+            background-color: #E2E3E5;
+            color: #383D41;
+        }
+        
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        th {
+            background-color: #F5F5F5;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        tr:hover {
+            background-color: #F9F9F9;
+        }
+        
+        /* Review button */
+        .review-btn {
+            background-color: #005AC6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .review-btn:hover {
+            background-color: #0047A3;
+        }
+        
+        .review-btn i {
+            font-size: 12px;
+        }
+    </style>
     <title>Verification_page</title>
 </head>
 
@@ -33,40 +116,49 @@
         <div class="blocks">
             <div class="container1">
                 <h3>FILTER</h3>
-                <div class="dropdown">
-                    <button class="dropbtn"><span>Status <i id = "dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
-                    <div class="dropdown-content">
-                      <a href="#">Rejected</a>
-                      <a href="#">Pending</a>
-                      <a href="#">In Review</a>
+                <div class="filter-container">
+                    <div class="dropdown">
+                        <button class="dropbtn"><span>All Status <i class="fa-solid fa-angle-down"></i></span></button>
+                        <div class="dropdown-content">
+                            <a href="#" data-value="">All</a>
+                            <a href="#" data-value="pending">Pending</a>
+                            <a href="#" data-value="in-review">In Review</a>
+                            <a href="#" data-value="approved">Approved</a>
+                            <a href="#" data-value="rejected">Rejected</a>
+                        </div>
                     </div>
+                    <div class="dropdown">
+                        <button class="dropbtn"><span>All Project Types <i class="fa-solid fa-angle-down"></i></span></button>
+                        <div class="dropdown-content">
+                            <a href="#" data-value="">All</a>
+                            <a href="#" data-value="mangrove">Mangrove</a>
+                            <a href="#" data-value="seagrass">Seagrass</a>
+                            <a href="#" data-value="salt marsh">Salt Marsh</a>
+                            <a href="#" data-value="wetland">Wetland</a>
+                        </div>
                     </div>
-                <div class="dropdown">
-                    <button class="dropbtn"><span>Project Type <i id = "dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
-                    <div class="dropdown-content">
-                      <a href="#">Mangrove</a>
-                      <a href="#">Seagrass</a>
-                      <a href="#">Salt Marsh</a>
-                    </div>
-                    </div>
-                <div class="dropdown">
-                    <button class="dropbtn"><span>Submission <i id="dropdownArrow" class="fa-solid fa-angle-down"></i></span></button>
-                    <div class="dropdown-content">
-                      <a href="#">This Week</a>
-                      <a href="#">This Month</a>
-                      <a href="#">This Year</a>
+                    <div class="dropdown">
+                        <button class="dropbtn"><span>All Time <i class="fa-solid fa-angle-down"></i></span></button>
+                        <div class="dropdown-content">
+                            <a href="#" data-value="">All Time</a>
+                            <a href="#" data-value="this week">This Week</a>
+                            <a href="#" data-value="this month">This Month</a>
+                            <a href="#" data-value="this year">This Year</a>
+                        </div>
                     </div>
                 </div>
-                <div class="calendar-container">
+                <div class="calendar-container" style="margin-left: 20px; margin-top: 20px;">
                     <div class="calender">
-                        <div class="heading">Select Dates</div>
-                        <div class="calendar" id="calendar">
-                            <div class="calendar-header">
-                                <button type="button" class="calendar-nav" id="prevMonth">&lt;</button>
-                                <div class="calendar-title" id="monthYear"></div>
-                                <button type="button" class="calendar-nav" id="nextMonth">&gt;</button>
+                        <div class="heading" style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
+                            <span style="font-weight: 600; color: #333;">Select Dates</span>
+                        </div>
+                        <div class="calendar" id="calendar" style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <div class="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <button type="button" class="calendar-nav" id="prevMonth" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 5px 10px;">&lt;</button>
+                                <div class="calendar-title" id="monthYear" style="font-weight: 600;"></div>
+                                <button type="button" class="calendar-nav" id="nextMonth" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 5px 10px;">&gt;</button>
                             </div>
-                            <div class="calendar-weekdays">
+                            <div class="calendar-weekdays" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; font-size: 12px; color: #666;">
                                 <div class="weekday">MO</div>
                                 <div class="weekday">TU</div>
                                 <div class="weekday">WE</div>
@@ -90,58 +182,22 @@
                             <th class="dark_bg">Location</th>
                             <th class="dark_bg">Organization</th>
                             <th class="dark_bg">Status</th>
+                            <th class="dark_bg">Submission Date</th>
                             <th class="dark_bg">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                    <tr data-status="Pending" data-project="Mangrove" data-submission="This Week">
-                        <td>Sunderbans</td>
-                        <td>West Bengal, India</td>
-                        <td>Organization</td>
-                        <td>Pending</td>
-                        <td><button class="review-btn">Review</button></td>
-                    </tr>
-                    <tr data-status="In Review" data-project="Seagrass" data-submission="This Week">
-                        <td>SeaGrass Meadows</td>
-                        <td>Tamil Nadu, India</td>
-                        <td>Organization</td>
-                        <td>In Review</td>
-                        <td><button class="review-btn">Review</button></td>
-                    </tr>
-                    <tr data-status="Rejected" data-project="Mangrove" data-submission="This Month">
-                        <td>Mangrove Project 1</td>
-                        <td>Odisha, India</td>
-                        <td>Organization</td>
-                        <td>Rejected</td>
-                        <td><button class="review-btn">Review</button></td>
-                    </tr>
-                    <tr data-status="Pending" data-project="Salt Marsh" data-submission="This Year">
-                        <td>Salt Marsh Project</td>
-                        <td>Gujarat, India</td>
-                        <td>Organization</td>
-                        <td>Pending</td>
-                        <td><button class="review-btn">Review</button></td>
-                    </tr>
-                    <tr data-status="In Review" data-project="Mangrove" data-submission="This Week">
-                        <td>Mangrove Project 2</td>
-                        <td>Andhra Pradesh, India</td>
-                        <td>Organization</td>
-                        <td>In Review</td>
-                        <td><button class="review-btn">Review</button></td>
-                    </tr>
-                    <tr data-status="Rejected" data-project="Seagrass" data-submission="This Month">
-                        <td>Seagrass Project</td>
-                        <td>Lakshadweep, India</td>
-                        <td>Organization</td>
-                        <td>Rejected</td>
-                        <td><button class="review-btn">Review</button></td>
-                    </tr>
+                    <tbody id="verificationTableBody">
+                        <!-- Rows will be populated by JavaScript -->
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
+    <!-- API and Integration Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/verification.js"></script>
+    
     <script>
         // Store filter state
         const filters = {
@@ -232,58 +288,79 @@
 
         // Initialize dropdowns and filters
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded and parsed');
+            
+            // Initialize verification page
+            if (window.initializeVerificationPage) {
+                window.initializeVerificationPage().catch(error => {
+                    console.error('Error initializing verification page:', error);
+                });
+            } else {
+                console.error('initializeVerificationPage function not found');
+            }
+            
             const dropdowns = document.querySelectorAll('.dropdown');
             
-            // Add reset button
-            const filterSection = document.querySelector('.container1');
-            const resetBtn = document.createElement('button');
-            resetBtn.className = 'reset-btn';
-            resetBtn.textContent = 'Reset Filters';
-            resetBtn.addEventListener('click', resetFilters);
-            filterSection.appendChild(resetBtn);
-            
-            // Initialize dropdowns
-            dropdowns.forEach((dropdown, index) => {
-                const dropbtn = dropdown.querySelector('.dropbtn');
-                const dropdownContent = dropdown.querySelector('.dropdown-content');
+            dropdowns.forEach(dropdown => {
+                const button = dropdown.querySelector('.dropbtn');
+                const content = dropdown.querySelector('.dropdown-content');
                 
-                dropbtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    
-                    // Close all other dropdowns
-                    dropdowns.forEach(otherDropdown => {
-                        if (otherDropdown !== dropdown) {
-                            otherDropdown.classList.remove('active');
+                if (button) {
+                    button.addEventListener('click', () => {
+                        // Toggle the active class
+                        dropdown.classList.toggle('active');
+                        
+                        // Toggle the arrow icon
+                        const arrow = button.querySelector('i');
+                        if (dropdown.classList.contains('active')) {
+                            arrow.classList.remove('fa-angle-down');
+                            arrow.classList.add('fa-angle-up');
+                        } else {
+                            arrow.classList.remove('fa-angle-up');
+                            arrow.classList.add('fa-angle-down');
                         }
                     });
-                    
-                    // Toggle current dropdown
-                    dropdown.classList.toggle('active');
-                });
+                }
                 
-                // Handle dropdown item selection
-                const dropdownItems = dropdownContent.querySelectorAll('a');
-                dropdownItems.forEach(item => {
-                    item.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const selectedValue = this.textContent.trim();
-                        const currentText = dropbtn.querySelector('span').textContent.split(' ')[0]; // Get the first word (Status/Project Type/Submission)
-                        
-                        // Update the button text and store the selected value
-                        dropbtn.innerHTML = `<span>${currentText}: ${selectedValue} <i class="fa-solid fa-angle-down"></i></span>`;
-                        dropbtn.setAttribute('data-selected', selectedValue);
+                // Close the dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (dropdown && !dropdown.contains(e.target)) {
                         dropdown.classList.remove('active');
-                        
-                        // Apply filters
-                        applyFilters();
-                    });
+                        const arrow = dropdown.querySelector('.dropbtn i');
+                        if (arrow) {
+                            arrow.classList.remove('fa-angle-up');
+                            arrow.classList.add('fa-angle-down');
+                        }
+                    }
                 });
             });
             
-            // Close dropdowns when clicking outside
-            document.addEventListener('click', function() {
-                dropdowns.forEach(dropdown => {
-                    dropdown.classList.remove('active');
+            // Add click handlers for dropdown items
+            document.querySelectorAll('.dropdown-content a').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const dropdown = this.closest('.dropdown');
+                    const button = dropdown.querySelector('.dropbtn');
+                    const value = this.textContent.trim();
+                    
+                    // Update button text
+                    if (button) {
+                        button.innerHTML = `<span>${value} <i class="fa-solid fa-angle-down"></i></span>`;
+                        
+                        // Update filter state
+                        if (dropdown.classList.contains('status-dropdown')) {
+                            filters.status = value === 'Status' ? null : value;
+                        } else if (dropdown.classList.contains('project-dropdown')) {
+                            filters.project = value === 'Project Type' ? null : value;
+                        } else if (dropdown.classList.contains('submission-dropdown')) {
+                            filters.submission = value === 'Submission' ? null : value;
+                        }
+                        
+                        // Apply filters
+                        if (window.applyFilters) {
+                            window.applyFilters();
+                        }
+                    }
                 });
             });
         });
@@ -418,6 +495,10 @@
             }
         });
     </script>
+    <!-- BlueCred API Integration -->
+    <script src="js/api.js"></script>
+    <script src="js/verification.js"></script>
+    <script src="js/websocket-client.js"></script>
 </body>
 
 </html>

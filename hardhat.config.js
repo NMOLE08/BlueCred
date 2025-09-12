@@ -11,13 +11,18 @@ module.exports = {
       }
     }
   },
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
-      chainId: 8546
+      chainId: 1337,
+      mining: {
+        auto: true,
+        interval: 10000
+      }
     },
     localhost: {
-      url: "http://127.0.0.1:8546",
-      chainId: 8546,
+      url: "http://127.0.0.1:8545",
+      chainId: 1337,
       accounts: {
         mnemonic: "test test test test test test test test test test test junk"
       }
@@ -28,5 +33,8 @@ module.exports = {
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts"
+  },
+  mocha: {
+    timeout: 40000
   }
 };
