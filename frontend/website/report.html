@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="report.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <title>Report-Page</title>
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="assets/logo.png" alt="logo">
+            </div>
+            <div class="option">
+                <p><a href="index.html" class="nav-link">HOME</a></p>
+                <p><a href="verification.html" class="nav-link">VERIFY</a></p>
+                <p><a href="#" class="nav-link active">REPORTS</a></p>
+            </div>
+            <div class="icons">
+                <button id="start-biomass-demo" class="biomass-demo-btn" onclick="openBiomassDemo()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; cursor: pointer; margin-right: 15px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); transition: all 0.3s ease; position: relative; overflow: hidden;">
+                    <i class="fa-solid fa-play" style="margin-right: 6px; font-size: 12px;"></i>
+                    
+                </button>
+                <button><i class="fa-solid fa-gear"></i></button>
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="block">
+            <div class="container1">
+                <h3>Project Details</h3>
+                <div class="box">
+                    <div class="project-info">
+                        <p><span class="label">Project Name:</span> Sundarbans Mangrove Restoration</p>
+                        <p><span class="label">Location:</span> West Bengal, India</p>
+                        <p><span class="label">Area:</span> 1,250 hectares</p>
+                        <p><span class="label">Status:</span> In Progress</p>
+                        <p><span class="label">Start Date:</span> 2023-01-15</p>
+                        <div class="image-grid">
+                            <img src="https://via.placeholder.com/300x200?text=Mangrove+1" alt="Mangrove Restoration 1">
+                            <img src="https://via.placeholder.com/300x200?text=Mangrove+2" alt="Mangrove Restoration 2">
+                            <img src="https://via.placeholder.com/300x200?text=Satellite+1" alt="Satellite Image 1">
+                            <img src="https://via.placeholder.com/300x200?text=Satellite+2" alt="Satellite Image 2">
+                        </div>
+                    </div>
+                </div>
+                <h3>Estimations</h3>
+                <div class="box">
+                    <div class="project-info">
+                        <p><span class="label">Estimated Carbon Sequestration:</span> 2,500 tons CO₂/year</p>
+                        <p><span class="label">Estimated Completion:</span> 2025-12-31</p>
+                        <p><span class="label">BCR Tokens to Issue:</span> 10,000 BCR</p>
+                        <p><span class="label">Verification Due:</span> 2023-12-15</p>
+                    </div>
+                </div>
+            </div>
+            <div class="container2">
+                <h3>Verification Checklist</h3>
+                <div class="checkbox">
+                    <input type="checkbox" id="data-consistency">
+                    <label for="data-consistency">Data Consistency Check</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" id="imagery-analysis">
+                    <label for="imagery-analysis">Imagery Analysis</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" id="field-visit">
+                    <label for="field-visit">Field Visit Required</label>
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Verification Outcome <span><i class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">Rejected</a>
+                      <a href="#">Approved</a>
+                      <a href="#">In Review</a>
+                      <a href="#">Send Back for Reupload</a>
+                    </div>
+                <div class="textarea">
+                    <label for="reviewer-comment">NCCR Reviewer Comment</label>
+                    <textarea id="reviewer-comment" rows="3" placeholder="Enter your comments here..."></textarea>
+                </div>
+                <div class="textarea">
+                    <label for="bcr-amount">BCRs To Issue</label>
+                    <input type="number" id="bcr-amount" placeholder="Enter BCR amount">
+                </div>
+                <input type="button" id="button" value="Final Verification" >
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Biomass Demo Function
+        function openBiomassDemo() {
+            console.log('Biomass demo button clicked!');
+            alert('Opening biomass estimation demo...');
+            // Open biomass estimation demo in a new window/tab
+            window.open('biomass-estimation-demo.html', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        // Dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debug: Check if biomass demo button exists
+            const biomassBtn = document.getElementById('start-biomass-demo');
+            console.log('Biomass demo button found:', biomassBtn);
+            if (biomassBtn) {
+                console.log('Button is visible:', biomassBtn.offsetWidth > 0 && biomassBtn.offsetHeight > 0);
+                console.log('Button styles:', window.getComputedStyle(biomassBtn).display);
+            }
+            
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const dropbtn = dropdown.querySelector('.dropbtn');
+                const dropdownContent = dropdown.querySelector('.dropdown-content');
+                
+                dropbtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Close all other dropdowns
+                    dropdowns.forEach(otherDropdown => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                });
+                
+                // Close dropdown when clicking on dropdown items
+                const dropdownItems = dropdownContent.querySelectorAll('a');
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        dropbtn.textContent = this.textContent + ' <span><i class="fa-solid fa-angle-down"></i></span>';
+                        dropdown.classList.remove('active');
+                    });
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+    </script>
+    <!-- BlueCred API Integration -->
+    <script src="js/api.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/websocket-client.js"></script>
+</body>
+
+</html>

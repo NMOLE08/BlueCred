@@ -23,21 +23,45 @@ const uploadSection = document.getElementById('upload-section');
 const statusIndicator = document.getElementById('status-indicator');
 const statusText = document.getElementById('status');
 
+// Demo-specific elements
+const demoSection = document.getElementById('demo-section');
+const demoVideo = document.getElementById('demo-video');
+const demoCurrentBiomass = document.getElementById('demo-current-biomass');
+const demoObjectsCount = document.getElementById('demo-objects-count');
+const resetDemoBtn = document.getElementById('reset-demo');
+const downloadDemoReportBtn = document.getElementById('download-demo-report');
+
 // Chart instance
 let biomassChart = null;
 
 // State
 let processing = false;
 let progressInterval = null;
+let demoInterval = null;
+let demoData = {
+    biomass: [2.1, 3.4, 4.2, 5.8, 7.1, 8.3, 9.2, 10.1, 11.5, 12.3, 11.8, 10.9, 9.7, 8.4, 7.2],
+    objects: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 19, 17, 15, 13, 11],
+    currentIndex: 0
+};
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Setup demo button
     const runDemoBtn = document.getElementById('run-demo');
     if (runDemoBtn) {
-        runDemoBtn.addEventListener('click', () => {
-            uploadFile();
+        runDemoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            startDemo();
         });
+    }
+    
+    // Setup demo-specific event listeners
+    if (resetDemoBtn) {
+        resetDemoBtn.addEventListener('click', resetDemo);
+    }
+    
+    if (downloadDemoReportBtn) {
+        downloadDemoReportBtn.addEventListener('click', downloadDemoReport);
     }
     
     // Setup other event listeners
@@ -492,10 +516,164 @@ function showError(message) {
     updateStatus('Error', 'red');
 }
 
+// Demo Functions
+function startDemo() {
+    try {
+        updateStatus('Starting demo...', 'blue');
+        
+        // Hide upload section and show demo section
+        if (uploadSection) {
+            uploadSection.classList.add('hidden');
+        }
+        
+        if (demoSection) {
+            demoSection.classList.remove('hidden');
+        }
+        
+        // Reset demo data
+        demoData.currentIndex = 0;
+        
+        // Start the demo video
+        if (demoVideo) {
+            demoVideo.currentTime = 0;
+            const playPromise = demoVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.error('Error playing demo video:', error);
+                });
+            }
+        }
+        
+        // Start real-time biomass simulation
+        startBiomassSimulation();
+        
+        updateStatus('Demo running', 'green');
+        
+        // Scroll to demo section
+        setTimeout(() => {
+            if (demoSection) {
+                demoSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error starting demo:', error);
+        showError('Failed to start demo: ' + error.message);
+    }
+}
+
+function startBiomassSimulation() {
+    // Clear any existing interval
+    if (demoInterval) {
+        clearInterval(demoInterval);
+    }
+    
+    // Update biomass data every 1 second to simulate real-time analysis
+    demoInterval = setInterval(() => {
+        if (demoData.currentIndex < demoData.biomass.length) {
+            // Update current biomass
+            if (demoCurrentBiomass) {
+                demoCurrentBiomass.textContent = `${demoData.biomass[demoData.currentIndex].toFixed(1)} kg`;
+            }
+            
+            // Update objects count
+            if (demoObjectsCount) {
+                demoObjectsCount.textContent = demoData.objects[demoData.currentIndex];
+            }
+            
+            demoData.currentIndex++;
+        } else {
+            // Demo completed
+            clearInterval(demoInterval);
+            updateStatus('Demo completed', 'green');
+        }
+    }, 1000);
+}
+
+function resetDemo() {
+    // Clear demo interval
+    if (demoInterval) {
+        clearInterval(demoInterval);
+    }
+    
+    // Reset demo data
+    demoData.currentIndex = 0;
+    
+    // Reset video
+    if (demoVideo) {
+        demoVideo.pause();
+        demoVideo.currentTime = 0;
+    }
+    
+    // Reset biomass display
+    if (demoCurrentBiomass) {
+        demoCurrentBiomass.textContent = '0.0 kg';
+    }
+    
+    if (demoObjectsCount) {
+        demoObjectsCount.textContent = '0';
+    }
+    
+    // Hide demo section and show upload section
+    demoSection.classList.add('hidden');
+    uploadSection.classList.remove('hidden');
+    
+    // Reset status
+    updateStatus('Ready', 'green');
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
+}
+
+function downloadDemoReport() {
+    // Create a simple demo report
+    const reportData = {
+        timestamp: new Date().toISOString(),
+        videoInfo: {
+            duration: '15 seconds',
+            resolution: '1920x1080',
+            frameRate: '30 FPS'
+        },
+        biomassAnalysis: {
+            totalBiomass: '54.5 kg',
+            averagePerFrame: '8.0 kg',
+            peakBiomass: '12.3 kg',
+            confidenceScore: '94.2%'
+        },
+        modelPredictions: {
+            seagrassCoverage: '85.3%',
+            coralDensity: 'Medium',
+            fishCount: 12,
+            waterClarity: 'Good'
+        },
+        realTimeData: demoData
+    };
+    
+    // Create and download JSON report
+    const dataStr = JSON.stringify(reportData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `biomass_demo_report_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    URL.revokeObjectURL(url);
+    
+    updateStatus('Demo report downloaded', 'green');
+}
+
 // Clean up on page unload
 window.addEventListener('beforeunload', () => {
     if (progressInterval) {
         clearInterval(progressInterval);
+    }
+    
+    if (demoInterval) {
+        clearInterval(demoInterval);
     }
     
     // Send a request to stop any ongoing processing

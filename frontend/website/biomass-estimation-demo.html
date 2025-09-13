@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Underwater Biomass Estimation</title>
+    <title>Underwater Biomass Estimation Demo</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -32,13 +32,16 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     <!-- Navigation -->
     <nav class="bg-blue-600 text-white p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">🌊 Underwater Biomass Estimation</h1>
+            <h1 class="text-2xl font-bold">🌊 Underwater Biomass Estimation Demo</h1>
             <div class="flex items-center space-x-4">
                 <span id="status" class="text-blue-100">Ready</span>
                 <div class="w-4 h-4 rounded-full bg-green-500" id="status-indicator"></div>
@@ -56,8 +59,9 @@
                     <i class="fas fa-play-circle text-5xl text-blue-500 mb-4"></i>
                     <h3 class="text-xl font-medium text-gray-800 mb-2">Run the Demo</h3>
                     <p class="text-gray-600 mb-6">Click the button below to see biomass estimation in action</p>
-                    
-                    
+                    <button id="run-demo" class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-play mr-2"></i> 
+                    </button>
                 </div>
                 <div class="mt-6 text-sm text-gray-500">
                     <p>This is a demonstration using pre-loaded sample footage.</p>
@@ -76,7 +80,7 @@
                     <h3 class="text-lg font-semibold text-gray-700">Underwater Footage</h3>
                     <div class="video-container bg-black rounded-lg overflow-hidden">
                         <video id="demo-video" controls class="w-full" preload="metadata">
-                            <source src="/static/demo/demo.mp4" type="video/mp4">
+                            <source src="http://localhost:5002/static/demo/demo.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
                     </div>
@@ -173,98 +177,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- Progress Section -->
-        <div id="progress-section" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-4">Processing Video</h2>
-            <div class="mb-4">
-                <div class="flex justify-between mb-1">
-                    <span class="text-sm font-medium text-gray-700">Progress</span>
-                    <span id="progress-percentage" class="text-sm font-medium text-blue-600">0%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
-                </div>
-                <div class="text-right mt-1">
-                    <span id="frame-count" class="text-xs text-gray-500">Frame 0/0</span>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div class="bg-blue-50 p-4 rounded-lg text-center">
-                    <p class="text-sm text-gray-600">Current Frame</p>
-                    <p id="current-frame" class="text-2xl font-bold text-blue-700">0</p>
-                </div>
-                <div class="bg-green-50 p-4 rounded-lg text-center">
-                    <p class="text-sm text-gray-600">Current Biomass</p>
-                    <p id="current-biomass" class="text-2xl font-bold text-green-700">0.00 kg</p>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-lg text-center">
-                    <p class="text-sm text-gray-600">Objects Detected</p>
-                    <p id="objects-detected" class="text-2xl font-bold text-purple-700">0</p>
-                </div>
-            </div>
-            <button id="stop-processing" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">
-                <i class="fas fa-stop mr-2"></i>Stop Processing
-            </button>
-        </div>
-
-        <!-- Video Preview -->
-        <div id="video-preview-section" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-4">Video Preview</h2>
-            <div class="video-container bg-black rounded-lg overflow-hidden">
-                <video id="processed-video" controls class="w-full">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        </div>
-
-        <!-- Results Section -->
-        <div id="results-section" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">Biomass Estimation Results</h2>
-            
-            <!-- Main Biomass Result -->
-            <div class="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-xl mb-8 text-center">
-                <div class="max-w-2xl mx-auto">
-                    <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg mb-6">
-                        <i class="fas fa-leaf text-4xl text-green-600"></i>
-                    </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Estimated Total Biomass</h3>
-                    <p id="final-biomass" class="text-5xl font-bold text-green-700 mb-4">54.5 kg</p>
-                    <p class="text-gray-600 mb-6">Based on analysis of the underwater footage</p>
-                    
-                    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Average per frame</p>
-                            <p class="text-xl font-semibold text-blue-700">8.0 kg</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Frames analyzed</p>
-                            <p class="text-xl font-semibold text-blue-700">120</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Video Preview -->
-            <div class="mb-8">
-                <h3 class="text-lg font-semibold mb-4">Processed Footage</h3>
-                <div class="video-container bg-gray-100 rounded-lg overflow-hidden">
-                    <video id="processed-video" controls class="w-full" autoplay>
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div id="actions-section" class="hidden flex justify-center space-x-4 mt-8">
-            <button id="process-again" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                <i class="fas fa-redo mr-2"></i>Process Another Video
-            </button>
-            <button id="download-report" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors">
-                <i class="fas fa-download mr-2"></i>Download Report
-            </button>
-        </div>
     </div>
 
     <!-- Footer -->
@@ -276,6 +188,233 @@
     </footer>
 
     <!-- JavaScript -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // DOM Elements
+        const uploadSection = document.getElementById('upload-section');
+        const demoSection = document.getElementById('demo-section');
+        const demoVideo = document.getElementById('demo-video');
+        const demoCurrentBiomass = document.getElementById('demo-current-biomass');
+        const demoObjectsCount = document.getElementById('demo-objects-count');
+        const resetDemoBtn = document.getElementById('reset-demo');
+        const downloadDemoReportBtn = document.getElementById('download-demo-report');
+        const statusIndicator = document.getElementById('status-indicator');
+        const statusText = document.getElementById('status');
+
+        // State
+        let demoInterval = null;
+        let demoData = {
+            biomass: [2.1, 3.4, 4.2, 5.8, 7.1, 8.3, 9.2, 10.1, 11.5, 12.3, 11.8, 10.9, 9.7, 8.4, 7.2],
+            objects: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 19, 17, 15, 13, 11],
+            currentIndex: 0
+        };
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup demo button
+            const runDemoBtn = document.getElementById('run-demo');
+            if (runDemoBtn) {
+                runDemoBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    startDemo();
+                });
+            }
+            
+            // Setup demo-specific event listeners
+            if (resetDemoBtn) {
+                resetDemoBtn.addEventListener('click', resetDemo);
+            }
+            
+            if (downloadDemoReportBtn) {
+                downloadDemoReportBtn.addEventListener('click', downloadDemoReport);
+            }
+        });
+
+        // Demo Functions
+        function startDemo() {
+            try {
+                updateStatus('Starting demo...', 'blue');
+                
+                // Hide upload section and show demo section
+                if (uploadSection) {
+                    uploadSection.classList.add('hidden');
+                }
+                
+                if (demoSection) {
+                    demoSection.classList.remove('hidden');
+                }
+                
+                // Reset demo data
+                demoData.currentIndex = 0;
+                
+                // Start the demo video
+                if (demoVideo) {
+                    demoVideo.currentTime = 0;
+                    const playPromise = demoVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.error('Error playing demo video:', error);
+                        });
+                    }
+                }
+                
+                // Start real-time biomass simulation
+                startBiomassSimulation();
+                
+                updateStatus('Demo running', 'green');
+                
+                // Scroll to demo section
+                setTimeout(() => {
+                    if (demoSection) {
+                        demoSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error starting demo:', error);
+                showError('Failed to start demo: ' + error.message);
+            }
+        }
+
+        function startBiomassSimulation() {
+            // Clear any existing interval
+            if (demoInterval) {
+                clearInterval(demoInterval);
+            }
+            
+            // Update biomass data every 1 second to simulate real-time analysis
+            demoInterval = setInterval(() => {
+                if (demoData.currentIndex < demoData.biomass.length) {
+                    // Update current biomass
+                    if (demoCurrentBiomass) {
+                        demoCurrentBiomass.textContent = `${demoData.biomass[demoData.currentIndex].toFixed(1)} kg`;
+                    }
+                    
+                    // Update objects count
+                    if (demoObjectsCount) {
+                        demoObjectsCount.textContent = demoData.objects[demoData.currentIndex];
+                    }
+                    
+                    demoData.currentIndex++;
+                } else {
+                    // Demo completed
+                    clearInterval(demoInterval);
+                    updateStatus('Demo completed', 'green');
+                }
+            }, 1000);
+        }
+
+        function resetDemo() {
+            // Clear demo interval
+            if (demoInterval) {
+                clearInterval(demoInterval);
+            }
+            
+            // Reset demo data
+            demoData.currentIndex = 0;
+            
+            // Reset video
+            if (demoVideo) {
+                demoVideo.pause();
+                demoVideo.currentTime = 0;
+            }
+            
+            // Reset biomass display
+            if (demoCurrentBiomass) {
+                demoCurrentBiomass.textContent = '0.0 kg';
+            }
+            
+            if (demoObjectsCount) {
+                demoObjectsCount.textContent = '0';
+            }
+            
+            // Hide demo section and show upload section
+            demoSection.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+            
+            // Reset status
+            updateStatus('Ready', 'green');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function downloadDemoReport() {
+            // Create a simple demo report
+            const reportData = {
+                timestamp: new Date().toISOString(),
+                videoInfo: {
+                    duration: '15 seconds',
+                    resolution: '1920x1080',
+                    frameRate: '30 FPS'
+                },
+                biomassAnalysis: {
+                    totalBiomass: '54.5 kg',
+                    averagePerFrame: '8.0 kg',
+                    peakBiomass: '12.3 kg',
+                    confidenceScore: '94.2%'
+                },
+                modelPredictions: {
+                    seagrassCoverage: '85.3%',
+                    coralDensity: 'Medium',
+                    fishCount: 12,
+                    waterClarity: 'Good'
+                },
+                realTimeData: demoData
+            };
+            
+            // Create and download JSON report
+            const dataStr = JSON.stringify(reportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `biomass_demo_report_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            URL.revokeObjectURL(url);
+            
+            updateStatus('Demo report downloaded', 'green');
+        }
+
+        function updateStatus(message, color) {
+            if (statusText) {
+                statusText.textContent = message;
+            }
+            
+            // Update status indicator color
+            const colors = {
+                'green': 'bg-green-500',
+                'blue': 'bg-blue-500',
+                'yellow': 'bg-yellow-500',
+                'red': 'bg-red-500'
+            };
+            
+            if (statusIndicator) {
+                // Remove all color classes
+                Object.values(colors).forEach(cls => {
+                    statusIndicator.classList.remove(cls);
+                });
+                
+                // Add the new color class
+                statusIndicator.classList.add(colors[color] || 'bg-gray-500');
+            }
+        }
+
+        function showError(message) {
+            // Show error message
+            alert('Error: ' + message);
+            updateStatus('Error', 'red');
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (demoInterval) {
+                clearInterval(demoInterval);
+            }
+        });
+    </script>
 </body>
 </html>

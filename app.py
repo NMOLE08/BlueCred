@@ -1,3 +1,7 @@
+
+
+
+
 import os
 import json
 import cv2
@@ -161,7 +165,7 @@ def index():
         shutil.copy2(demo_video_path, static_demo_path)
     
     # Render template with demo video path
-    return render_template('index.html', demo_video=f'/static/demo/demo.mp4')
+    return render_template('biomass-estimation.html', demo_video=f'/static/demo/demo.mp4')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -208,4 +212,4 @@ def stop_processing():
     return jsonify({'message': 'Processing stopped'})
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    app.run(debug=True, threaded=True, port=5002)

@@ -1,0 +1,511 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header .navbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .logo{
+  margin-left: 30px;
+}
+.navbar .logo img{
+  width: 150px;
+}
+
+.navbar .option{
+  display: flex;
+}
+.navbar .option p {
+  padding: 0 40px;
+  margin: 0;
+}
+.nav-link {
+  font-family: Anton;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 101px;
+  letter-spacing: 0%;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: block;
+  height: 100%;
+}
+
+.nav-link:hover {
+  color: #00489A;
+  text-decoration: none;
+margin: 0;}
+
+.navbar .icons{
+  display: flex;
+}
+.navbar .icons button{
+  margin: 20px;
+  padding: 10px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  border: 0px;
+}
+
+.icons button i{
+  font-size: 20px;
+}
+body{
+  background-color: #F2F4F5;
+}
+
+main .blocks{
+  display: flex;
+  
+}
+
+main .blocks .container1 {
+  width: 259px;
+  height: 687px;
+  opacity: 1;
+  border-radius: 12px;
+  background-color: #FFFFFF;
+  border: 1px solid #D9D9D9;
+  margin-left: 55px;
+  padding: 15px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.container2 {
+  flex: 1;
+  margin: 0 55px 0 20px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.container2 h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.container2 table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  table-layout: fixed;
+}
+
+.container2 th, .container2 td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #E0E0E0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.container2 th {
+  background-color: #F8F9FA;
+  font-weight: 600;
+  color: #333;
+  position: sticky;
+  top: 0;
+}
+
+.container2 tr:hover {
+  background-color: #F8F9FA;
+}
+
+.container2 .review-btn {
+  background-color: #00489A;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.container2 .review-btn:hover {
+  background-color: #003366;
+}
+
+.filter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.dropdown {
+    position: relative;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.dropbtn {
+    color: #333;
+    background-color: #FFFFFF;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 6px;
+    text-align: left;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.dropbtn:hover {
+  border-color: #00489A;
+  color: #00489A;
+}
+
+.dropbtn i {
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.dropdown.active .dropbtn i {
+  transform: rotate(180deg);
+}
+
+
+  .dropdown.active .dropdown-content {
+    display: block;
+  }
+  .dropdown #dropdownArrow{
+    padding-left: 90px;
+  }
+
+  /* Reset Filters Button */
+  .reset-btn {
+    width: 200px;
+    height: 50px;
+    background-color: #00489A;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 20px 20px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .reset-btn:hover {
+    background-color: #003366;
+  }
+
+
+
+  main .calender .heading{
+    width: 201px;
+  }
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: 100%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    border-radius: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e1e4e8;
+    margin-top: 5px;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-content a:first-child {
+    font-weight: 600;
+    color: #005AC6;
+    background-color: #f8f9fa;
+}
+
+.dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-content a:hover {
+    background-color: #f5f8ff;
+    color: #005AC6;
+    padding-left: 20px;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Calendar styles */
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+    background-color: #f0f0f0;
+}
+
+.calendar-day.today {
+    background-color: #e3f2fd;
+    font-weight: 600;
+}
+
+.calendar-day.selected {
+    background-color: #005AC6;
+    color: white;
+}
+
+.calendar-day.other-month {
+    color: #999;
+    opacity: 0.6;
+}
+
+.dropdown-content a:last-child {
+  border-bottom: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #f8fafc;
+  color: #00489A;
+  padding-left: 20px;
+}
+
+.dropdown.active .dropdown-content {
+  display: block;
+}
+.dropdown {
+  margin: 10px 7px;
+  width: 225px;
+}
+
+.dropdown h3 {
+  font-size: 16px;
+  color: #4a5568;
+  margin-bottom: 8px;
+  padding: 0 10px;
+  font-weight: 600;
+}
+
+/* Reset Filters Button */
+.reset-btn {
+  width: 200px;
+  height: 50px;
+  background-color: #00489A;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 20px 20px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reset-btn:hover {
+  background-color: #003366;
+}
+
+
+
+main .calender .heading{
+  width: 201px;
+  height: 51px;
+  opacity: 1;
+  border-radius: 20px;
+  color: #FFFFFF;
+  background-color: #7b7b7b78;
+  padding: 5px 60px;
+  margin: 25px -20px;
+  text-align: center;
+  line-height: 21px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+}
+
+/* Calendar Styles */
+.calendar {
+  width: 251px;
+  margin: 20px -30px;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.calendar-nav {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #8F9098;
+  padding: 5px;
+}
+
+.calendar-nav:hover {
+  color: #333;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8F9098;
+  padding: 8px 0;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+  color: #333;
+}
+
+.calendar-day:hover {
+  background-color: #f0f0f0;
+}
+
+.calendar-day.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.calendar-day.other-month {
+  color: #ccc;
+}
+
+.calendar-day.today {
+  background-color: #e9ecef;
+  font-weight: 600;
+}
+
+.calendar-day.today.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+main .container2 {
+  background-color: #FFFFFF;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  overflow-x: auto;
+}
+
+main .container2 h2{
+  font-family: Open Sans;
+font-weight: 700;
+font-style: Bold;
+font-size: 34px;
+leading-trim: NONE;
+line-height: 101px;
+letter-spacing: -2%;
+margin-left:30px ;
+
+}
+main .container2 table{
+  
+}
+main .container2 table tr{
+
+}
+
+main .container2 table tr td{
+  /* border: solid 1px black; */
+  padding: 20px 40px;
+  font-family: Open Sans;
+font-weight: 100;
+font-style: Regular;
+font-size: 14px;
+leading-trim: NONE;
+/* line-height: 101px; */
+letter-spacing: -2%;
+
+  
+  
+}
+
+main .container2 table tr td button{
+  border: 0;
+  background-color: #007bff;
+  color: #FFFFFF;
+  padding: 5px;
+  border-radius:5px ;
+}
+
+main .container2 table tr td button:hover{
+  border: 0;
+  background-color: #3195ff;
+  color: #FFFFFF;
+  padding: 5px;
+  border-radius:5px ;
+}
+
+main .container2 .dark_bg{
+  background-color: rgb(183, 183, 183);
+}
