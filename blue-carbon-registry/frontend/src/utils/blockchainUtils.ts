@@ -1,4 +1,5 @@
 // Utility functions for direct blockchain interaction to bypass MetaMask caching issues
+import { ethers } from 'ethers';
 
 const HARDHAT_RPC_URL = 'http://127.0.0.1:8546';
 
@@ -64,10 +65,9 @@ export class BlockchainUtils {
       to: tokenAddress,
       data: callData
     });
-    
-    // Convert from wei to tokens (assuming 18 decimals)
+    // Convert from wei to tokens precisely (18 decimals)
     const balance = BigInt(result);
-    return (Number(balance) / (10**18)).toString();
+    return ethers.formatEther(balance);
   }
 
   static async getTokenAllowance(tokenAddress: string, ownerAddress: string, spenderAddress: string): Promise<string> {
@@ -79,10 +79,9 @@ export class BlockchainUtils {
       to: tokenAddress,
       data: callData
     });
-    
-    // Convert from wei to tokens (assuming 18 decimals)
+    // Convert from wei to tokens precisely (18 decimals)
     const allowance = BigInt(result);
-    return (Number(allowance) / (10**18)).toString();
+    return ethers.formatEther(allowance);
   }
 
   static async getTotalListings(marketplaceAddress: string): Promise<number> {
@@ -100,69 +99,6 @@ export class BlockchainUtils {
 
   static async getCurrentBlockNumber(): Promise<number> {
     return await this.getCurrentBlock();
-  }
-
-  // Helper function to get transaction count (nonce)
-  static async getTransactionCount(address: string): Promise<number> {
-    const response = await fetch(HARDHAT_RPC_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'eth_getTransactionCount',
-        params: [address, 'latest'],
-        id: 1
-      })
-    });
-    
-    const data = await response.json();
-    if (data.error) {
-      throw new Error(`Failed to get transaction count: ${data.error.message}`);
-    }
-    
-    return parseInt(data.result, 16);
-  }
-
-  // Helper function to get gas price
-  static async getGasPrice(): Promise<string> {
-    const response = await fetch(HARDHAT_RPC_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'eth_gasPrice',
-        params: [],
-        id: 1
-      })
-    });
-    
-    const data = await response.json();
-    if (data.error) {
-      throw new Error(`Failed to get gas price: ${data.error.message}`);
-    }
-    
-    return data.result;
-  }
-
-  // Helper function to estimate gas
-  static async estimateGas(transaction: any): Promise<string> {
-    const response = await fetch(HARDHAT_RPC_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'eth_estimateGas',
-        params: [transaction],
-        id: 1
-      })
-    });
-    
-    const data = await response.json();
-    if (data.error) {
-      throw new Error(`Failed to estimate gas: ${data.error.message}`);
-    }
-    
-    return data.result;
   }
 }
 

@@ -117,9 +117,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user, contracts }) => {
         <div className="stat-card">
           <div className="stat-icon">🪙</div>
           <div className="stat-content">
-            <h3>{stats.totalTokens}</h3>
+            <h3>{parseFloat(stats.totalTokens).toFixed(2)}</h3>
             <p>Total NCT Tokens</p>
-            <small>{parseFloat(stats.totalTokens) * 3994} tons CO₂e</small>
+            <small>{(parseFloat(stats.totalTokens) * 3994).toLocaleString()} tons CO₂e</small>
           </div>
         </div>
         
@@ -172,11 +172,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user, contracts }) => {
             </div>
             <div className="info-item">
               <span className="label">NCT Tokens:</span>
-              <span className="value">{stats.totalTokens}</span>
+              <span className="value">{parseFloat(stats.totalTokens).toFixed(2)}</span>
             </div>
             <div className="info-item">
               <span className="label">CO₂e Equivalent:</span>
-              <span className="value">{parseFloat(stats.totalTokens) * 3994} tons</span>
+              <span className="value">{(parseFloat(stats.totalTokens) * 3994).toLocaleString()} tons</span>
             </div>
             <div className="info-item">
               <span className="label">Retired Tokens:</span>

@@ -149,7 +149,7 @@ function App() {
           const isOwner = address.toLowerCase() === ownerAddress.toLowerCase();
           console.log('👑 Owner check:', { address, ownerAddress, isOwner });
           
-               // Get token balance using ethers.js contract call
+               // Get token balance using direct JSON-RPC call to avoid MetaMask caching
                let tokenBalance = "0";
                try {
                  if (config) {
@@ -157,24 +157,22 @@ function App() {
                    console.log('🔄 Account change address:', address);
                    console.log('🔄 Account change contract address:', config.contracts.carbonCreditToken);
 
-                   // Create contract instance
-                   const carbonToken = new ethers.Contract(
-                     config.contracts.carbonCreditToken,
-                     ['function balanceOf(address) view returns (uint256)'],
-                     provider
-                   );
+                   // Use direct JSON-RPC call to bypass MetaMask caching
+                   const functionSelector = '0x70a08231'; // balanceOf(address)
+                   const paddedAddress = address.slice(2).padStart(64, '0');
+                   const callData = functionSelector + paddedAddress;
                    
-                   console.log('🔄 Getting token balance using ethers.js...');
-                   // Get current block number directly from Hardhat node to avoid MetaMask caching issues
-                   const blockResponse = await fetch('http://127.0.0.1:8546', {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 })
+                   console.log('🔄 Making eth_call request...');
+                   const response = await window.ethereum!.request({
+                     method: 'eth_call',
+                     params: [{
+                       to: config.contracts.carbonCreditToken,
+                       data: callData
+                     }, 'latest'] // Use latest block
                    });
-                   const blockData = await blockResponse.json();
-                   const currentBlock = parseInt(blockData.result, 16);
-                   console.log('🔄 Current block number from Hardhat:', currentBlock);
-                   const balance = await carbonToken.balanceOf(address, { blockTag: currentBlock });
+                   
+                   console.log('🔄 Raw response from blockchain:', response);
+                   const balance = BigInt(response);
                    tokenBalance = ethers.formatEther(balance);
                    console.log('🔄 Account change raw balance:', balance.toString());
                    console.log('🔄 Account change formatted balance:', tokenBalance);
@@ -197,14 +195,79 @@ function App() {
       };
 
       window.ethereum.on('accountsChanged', handleAccountsChanged);
+      // Listen for chain changes and force a reload to avoid stale provider state
+      const handleChainChanged = () => {
+        console.log('🔄 Chain changed, reloading...');
+        window.location.reload();
+      };
+      window.ethereum.on('chainChanged', handleChainChanged);
       
       return () => {
         if (window.ethereum) {
           window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+          window.ethereum.removeListener('chainChanged', handleChainChanged);
         }
       };
     }
   }, [config]);
+
+  // Polling fallback: Some environments/extensions occasionally miss accountsChanged.
+  // Periodically check the selected account and refresh user if it changed.
+  useEffect(() => {
+    let intervalId: any;
+    if (window.ethereum) {
+      intervalId = setInterval(async () => {
+        try {
+          const accounts: string[] = await window.ethereum!.request({ method: 'eth_accounts' });
+          const current = accounts && accounts.length > 0 ? accounts[0] : null;
+          if (current && user && current.toLowerCase() !== user.address.toLowerCase()) {
+            console.log('⏱️ Poll detected account change to', current);
+            // Mirror the update behavior from the accountsChanged handler
+            const provider = new ethers.BrowserProvider(window.ethereum!);
+            const signer = await provider.getSigner();
+            const address = await signer.getAddress();
+            const balance = await provider.getBalance(address);
+            const ethBalance = ethers.formatEther(balance);
+            const ownerAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+            const isOwner = address.toLowerCase() === ownerAddress.toLowerCase();
+
+            // Get token balance via direct eth_call to avoid caching
+            let tokenBalance = "0";
+            try {
+              if (config) {
+                const functionSelector = '0x70a08231'; // balanceOf(address)
+                const paddedAddress = address.slice(2).padStart(64, '0');
+                const callData = functionSelector + paddedAddress;
+                const response = await window.ethereum!.request({
+                  method: 'eth_call',
+                  params: [{
+                    to: config.contracts.carbonCreditToken,
+                    data: callData
+                  }, 'latest']
+                });
+                const raw = BigInt(response);
+                tokenBalance = ethers.formatEther(raw);
+              }
+            } catch (err) {
+              console.error('Polling: failed token balance fetch', err);
+            }
+
+            setUser({
+              address,
+              balance: parseFloat(ethBalance).toFixed(4),
+              tokenBalance,
+              isOwner
+            });
+          }
+        } catch (e) {
+          // Silent; polling should be lightweight
+        }
+      }, 2000);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [user, config]);
 
   const handleWalletConnect = (userData: User) => {
     setUser(userData);
@@ -213,6 +276,59 @@ function App() {
   const handleWalletDisconnect = () => {
     setUser(null);
     setContracts(null);
+  };
+
+  const handleSwitchAccount = async () => {
+    try {
+      if (!window.ethereum) return;
+      // Prompt MetaMask to re-request account permissions (opens account selection UI)
+      await window.ethereum.request({
+        method: 'wallet_requestPermissions',
+        params: [{ eth_accounts: {} }]
+      });
+
+      const accounts: string[] = await window.ethereum.request({ method: 'eth_accounts' });
+      if (!accounts || accounts.length === 0) return;
+
+      // Rehydrate user state for the selected account
+      const provider = new ethers.BrowserProvider(window.ethereum!);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      const balance = await provider.getBalance(address);
+      const ethBalance = ethers.formatEther(balance);
+      const ownerAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+      const isOwner = address.toLowerCase() === ownerAddress.toLowerCase();
+
+      // Get token balance using direct eth_call to avoid caching
+      let tokenBalance = "0";
+      try {
+        if (config) {
+          const functionSelector = '0x70a08231'; // balanceOf(address)
+          const paddedAddress = address.slice(2).padStart(64, '0');
+          const callData = functionSelector + paddedAddress;
+          const response = await window.ethereum!.request({
+            method: 'eth_call',
+            params: [{
+              to: config.contracts.carbonCreditToken,
+              data: callData
+            }, 'latest']
+          });
+          const raw = BigInt(response);
+          tokenBalance = ethers.formatEther(raw);
+        }
+      } catch (err) {
+        console.error('Switch Account: failed token balance fetch', err);
+      }
+
+      setUser({
+        address,
+        balance: parseFloat(ethBalance).toFixed(4),
+        tokenBalance,
+        isOwner
+      });
+    } catch (e) {
+      console.error('Failed to switch account', e);
+    }
   };
 
   const refreshUserData = async () => {
@@ -234,7 +350,7 @@ function App() {
           const ownerAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
           const isOwner = address.toLowerCase() === ownerAddress.toLowerCase();
         
-               // Get token balance using ethers.js contract call
+               // Get token balance using direct JSON-RPC call to avoid MetaMask caching
                let tokenBalance = "0";
                try {
                  if (newConfig) {
@@ -242,24 +358,22 @@ function App() {
                    console.log('🔄 Refresh address:', address);
                    console.log('🔄 Refresh contract address:', newConfig.contracts.carbonCreditToken);
 
-                   // Create contract instance
-                   const carbonToken = new ethers.Contract(
-                     newConfig.contracts.carbonCreditToken,
-                     ['function balanceOf(address) view returns (uint256)'],
-                     provider
-                   );
+                   // Use direct JSON-RPC call to bypass MetaMask caching
+                   const functionSelector = '0x70a08231'; // balanceOf(address)
+                   const paddedAddress = address.slice(2).padStart(64, '0');
+                   const callData = functionSelector + paddedAddress;
                    
-                   console.log('🔄 Refresh: Getting token balance using ethers.js...');
-                   // Get current block number directly from Hardhat node to avoid MetaMask caching issues
-                   const blockResponse = await fetch('http://127.0.0.1:8546', {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 })
+                   console.log('🔄 Refresh: Making eth_call request...');
+                   const response = await window.ethereum!.request({
+                     method: 'eth_call',
+                     params: [{
+                       to: newConfig.contracts.carbonCreditToken,
+                       data: callData
+                     }, 'latest'] // Use latest block
                    });
-                   const blockData = await blockResponse.json();
-                   const currentBlock = parseInt(blockData.result, 16);
-                   console.log('🔄 Refresh: Current block number from Hardhat:', currentBlock);
-                   const balance = await carbonToken.balanceOf(address, { blockTag: currentBlock });
+                   
+                   console.log('🔄 Refresh: Raw response from blockchain:', response);
+                   const balance = BigInt(response);
                    tokenBalance = ethers.formatEther(balance);
                    console.log('🔄 Refresh raw balance:', balance.toString());
                    console.log('🔄 Refresh formatted balance:', tokenBalance);
@@ -270,14 +384,12 @@ function App() {
                  tokenBalance = "0";
                }
         
-        console.log('🔄 Refresh: Setting user state with tokenBalance:', tokenBalance);
         setUser({
           address,
           balance: parseFloat(ethBalance).toFixed(4),
           tokenBalance,
           isOwner
         });
-        console.log('✅ Refresh: User data refreshed with tokenBalance:', tokenBalance);
       } catch (error) {
         console.error("Error refreshing user data:", error);
       }
@@ -308,9 +420,16 @@ function App() {
             <div className="wallet-info">
               <p><strong>Address:</strong> {user.address.slice(0, 6)}...{user.address.slice(-4)}</p>
               <p><strong>ETH Balance:</strong> {user.balance} ETH</p>
-              <p><strong>NCT Tokens:</strong> {user.tokenBalance}</p>
+              <p><strong>NCT Tokens:</strong> {parseFloat(user.tokenBalance).toFixed(2)}</p>
               {user.isOwner && <span className="owner-badge">OWNER</span>}
+              <div className="debug-info" style={{fontSize: '10px', color: '#666', marginTop: '4px'}}>
+                <div>Token: {config?.contracts?.carbonCreditToken?.slice(0,10)}...</div>
+                <div>Full Addr: {user.address}</div>
+              </div>
             </div>
+            <button onClick={handleSwitchAccount} className="refresh-btn">
+              🔀 Switch Account
+            </button>
             <button onClick={refreshUserData} className="refresh-btn">
               🔄 Refresh
             </button>

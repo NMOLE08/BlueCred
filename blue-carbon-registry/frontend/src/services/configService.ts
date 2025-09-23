@@ -15,7 +15,7 @@ export interface ContractConfig {
 class ConfigService {
   private config: ContractConfig | null = null;
   private lastFetch: number = 0;
-  private readonly CACHE_DURATION = 30000; // 30 seconds cache
+  private readonly CACHE_DURATION = 0; // No cache during development
 
   async getConfig(): Promise<ContractConfig> {
     const now = Date.now();

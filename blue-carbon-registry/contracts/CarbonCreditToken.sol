@@ -77,7 +77,7 @@ contract CarbonCreditToken is ERC20, Ownable, Pausable {
     }
     
     /**
-     * @dev Verify a project and mint tokens to NGO's wallet
+     * @dev Verify a project and mint tokens to NGO's wallet (allows multiple mints)
      * @param projectId Project to verify
      * @param ngoWallet NGO's wallet address
      */
@@ -87,16 +87,46 @@ contract CarbonCreditToken is ERC20, Ownable, Pausable {
     {
         CarbonProject storage project = projects[projectId];
         require(project.carbonCredits > 0, "Project does not exist");
-        require(!project.isVerified, "Project already verified");
         require(!project.isRetired, "Project already retired");
         
-        project.isVerified = true;
+        // Set as verified if not already (allows multiple mints)
+        if (!project.isVerified) {
+            project.isVerified = true;
+            emit ProjectVerified(projectId, true);
+        }
         
         // Mint tokens to NGO's wallet (1 NCT ≈ 3,994 tons CO₂e)
         _mint(ngoWallet, project.carbonCredits);
         
-        emit ProjectVerified(projectId, true);
         emit TokensMinted(projectId, ngoWallet, project.carbonCredits);
+    }
+    
+    /**
+     * @dev Mint additional tokens for an existing project (for ML integration)
+     * @param projectId Project to mint tokens for
+     * @param ngoWallet NGO's wallet address
+     * @param additionalCredits Additional carbon credits to mint
+     */
+    function mintAdditionalCredits(
+        string memory projectId, 
+        address ngoWallet, 
+        uint256 additionalCredits
+    ) external onlyOwner {
+        CarbonProject storage project = projects[projectId];
+        require(project.carbonCredits > 0, "Project does not exist");
+        require(!project.isRetired, "Project already retired");
+        require(additionalCredits > 0, "Additional credits must be greater than 0");
+        
+        // Set as verified if not already
+        if (!project.isVerified) {
+            project.isVerified = true;
+            emit ProjectVerified(projectId, true);
+        }
+        
+        // Mint additional tokens
+        _mint(ngoWallet, additionalCredits);
+        
+        emit TokensMinted(projectId, ngoWallet, additionalCredits);
     }
     
     /**

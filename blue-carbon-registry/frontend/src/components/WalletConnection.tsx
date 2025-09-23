@@ -103,7 +103,7 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({ onConnect }) => {
     window.ethereum.request({
       method: 'wallet_addEthereumChain',
       params: [{
-        chainId: '0x2166', // 8546 in hex
+        chainId: '0x2162', // 8546 in hex
         chainName: 'Localhost 8546',
         nativeCurrency: {
           name: 'Ethereum',
