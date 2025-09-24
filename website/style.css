@@ -1,0 +1,321 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header .navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .logo{
+    margin-left: 30px;
+}
+.navbar .logo img{
+    width: 150px;
+}
+
+.navbar .option{
+    display: flex;
+}
+.navbar .option p {
+    padding: 0 40px;
+    margin: 0;
+}
+
+.nav-link {
+    font-family: Anton;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 101px;
+    letter-spacing: 0%;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: block;
+    height: 100%;
+}
+
+.nav-link:hover {
+    color: #00489A;
+    text-decoration: none;
+}
+
+.navbar .icons{
+    display: flex;
+}
+.navbar .icons button{
+    margin: 20px;
+    padding: 10px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    border: 0px;
+}
+
+.icons button i{
+    font-size: 20px;
+}
+body{
+    background-color: #F2F4F5;
+}
+
+main .active_feed{
+    display: flex;
+}
+
+.active_feed .white_box{
+    width: 291px;
+    height: 153px;
+    opacity: 1;
+    border-radius: 20px;
+    border: 1px solid #D9D9D9;
+    background-color: #FFFFFF;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.active_feed .white_box .count p{
+    color: #00489A;
+}
+
+.active_feed .blue_box {
+    width: 291px;
+    height: 153px;
+    opacity: 1;
+    border-radius: 20px;
+    border: 1px solid #D9D9D9;
+    background-color: #00489A;
+    margin: 1rem;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.topic p {
+    justify-self: center;
+    padding: 20px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin: 0;
+}
+
+.count {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+    text-align: center;
+    justify-self: center;
+    padding: 10px;
+    margin: 0;
+}
+
+main .block2{
+    display: flex;
+
+}
+/* Map container styles */
+#map {
+    width: 602px;
+    height: 503px;
+    border-radius: 20px;
+    margin: 1rem;
+    box-shadow: 0 0 20px rgba(0, 72, 154, 0.3);
+    z-index: 1;
+    overflow: hidden;
+    background: #0f172a; /* Dark background for loading state */
+}
+
+/* Ensure the map tiles display properly */
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: #0f172a; /* Dark background */
+}
+
+/* Dark theme for map controls */
+.leaflet-control {
+    background: rgba(30, 41, 59, 0.9);
+    color: #f8fafc;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+
+.leaflet-bar {
+    border: none;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+
+.leaflet-bar a {
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    color: #f8fafc;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+}
+
+.leaflet-bar a:hover {
+    background: #334155;
+    color: #ffffff;
+}
+
+.leaflet-bar a:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.leaflet-bar a:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom: none;
+}
+
+/* Scale control */
+.leaflet-control-scale {
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+.leaflet-control-scale-line {
+    background: rgba(30, 41, 59, 0.9);
+    color: #f8fafc;
+    border: 2px solid #334155;
+    border-top: none;
+}
+
+/* Layer control */
+.leaflet-control-layers {
+    border-radius: 4px;
+    background: rgba(30, 41, 59, 0.9);
+    color: #f8fafc;
+}
+
+.leaflet-control-layers-toggle {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23f8fafc"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>');
+    background-size: 20px 20px;
+}
+
+.leaflet-control-layers-expanded {
+    padding: 10px;
+    color: #f8fafc;
+    background: rgba(30, 41, 59, 0.9);
+}
+
+.leaflet-control-layers label {
+    display: block;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.leaflet-control-layers-selector {
+    margin-right: 8px;
+}
+
+/* Map title */
+.map-title {
+    background: rgba(30, 41, 59, 0.9);
+    color: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 10px 0 0 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+}
+
+.map-title h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+/* Popup styling */
+.leaflet-popup-content-wrapper {
+    background: #1e293b;
+    color: #f8fafc;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.leaflet-popup-content {
+    margin: 8px 12px;
+    line-height: 1.4;
+}
+
+.leaflet-popup-tip {
+    background: #1e293b;
+}
+
+/* Custom marker styles */
+.map-marker {
+    text-align: center;
+    color: #4dabf7;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+main .block2 .alerts{
+    background-color: #FFFFFF;
+    border: 1px solid #D9D9D9;
+    width: 604px;
+    height: 503px;
+    opacity: 1;
+    border-radius: 20px;
+    margin: 1rem;
+}
+
+main .block2 .alerts p {
+    width: 567px;
+    height: 83px;
+    opacity: 1;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 100px;
+    margin: 0 20px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    box-sizing: border-box;
+}
+
+.alerts h3 {
+    justify-self: center;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 101px;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin: 0;
+    padding: 0 20px;
+}
+
+.alerts .grey{
+    background-color: #3F3F3F;
+    color: #FFFFFF;
+    
+}
+
+.alerts .white{
+    background-color: #E3E3E3;
+    
+}
+
+.unblanced{
+    margin: -30px;
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="report.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <title>Report-Page</title>
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="assets/logo.png" alt="logo">
+            </div>
+            <div class="option">
+                <p><a href="index.html" class="nav-link">HOME</a></p>
+                <p><a href="verification.html" class="nav-link">VERIFY</a></p>
+                <p><a href="#" class="nav-link active">REPORTS</a></p>
+            </div>
+            <div class="icons">
+                <button><i class="fa-solid fa-gear"></i></button>
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="block">
+            <div class="container1">
+                <h3>Project Details</h3>
+                <div class="box"></div>
+                <h3>Estimations</h3>
+                <div class="box"></div>
+            </div>
+            <div class="container2">
+                <h3>Verification Checklist</h3>
+                <div class="checkbox">
+                    <input type="checkbox">Data Consistency Check</input>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox">Imagery Analysis</input>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox">Field Visit Required</input>
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Verification Outcome <span><i class="fa-solid fa-angle-down"></i></span></button>
+                    <div class="dropdown-content">
+                      <a href="#">Rejected</a>
+                      <a href="#">Approved</a>
+                      <a href="#">In Review</a>
+                      <a href="#">Send Back for Reupload</a>
+                    </div>
+                <div class="textarea">
+                    <input type="textarea" placeholder="NCCR Reviewer Comment">
+                </div>
+                <div class="textarea">
+                    <input type="textarea" placeholder="BCRs To Issue">
+                </div>
+                <input type="button" id="button" value="Final Verification" >
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const dropbtn = dropdown.querySelector('.dropbtn');
+                const dropdownContent = dropdown.querySelector('.dropdown-content');
+                
+                dropbtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Close all other dropdowns
+                    dropdowns.forEach(otherDropdown => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                });
+                
+                // Close dropdown when clicking on dropdown items
+                const dropdownItems = dropdownContent.querySelectorAll('a');
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        dropbtn.textContent = this.textContent + ' <span><i class="fa-solid fa-angle-down"></i></span>';
+                        dropdown.classList.remove('active');
+                    });
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
