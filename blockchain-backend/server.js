@@ -4,12 +4,17 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+const path = require('path');
+
+// Load environment variables from this directory explicitly so
+// starting the server from any CWD still picks up blockchain-backend/.env
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // Import routes
 const adminRoutes = require('./routes/adminRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const ngoRoutes = require('./routes/ngoRoutes');
+const verificationRoutes = require('./routes/verificationRoutes');
 const projectController = require('./controllers/projectController');
 
 // Import utilities
@@ -45,7 +50,14 @@ app.use(limiter);
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000', 'http://localhost:3001'],
+    : [
+        'http://localhost:3000', 
+        'http://localhost:3001', 
+        'http://localhost:8080',  // Flutter web
+        'http://127.0.0.1:5002',  // Biomass frontend
+        'http://localhost:8000',  // NCCR website (localhost)
+        'http://127.0.0.1:8000'   // NCCR website (127.0.0.1)
+      ],
   credentials: true
 }));
 
@@ -118,6 +130,7 @@ app.get('/config', (req, res) => {
 app.use('/api/admin', adminRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/ngos', ngoRoutes);
+app.use('/api/verification', verificationRoutes);
 
 // Public endpoints for ML UI (no auth)
 app.get('/api/public/projects/summaries', projectController.getProjectSummaries);

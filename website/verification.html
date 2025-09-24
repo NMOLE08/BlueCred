@@ -19,9 +19,9 @@
                 <img src="assets/logo.png" alt="logo">
             </div>
             <div class="option">
-                <p><a href="index.html" class="nav-link">HOME</a></p>
+                <p><a href="nccr-authorities.html" class="nav-link">HOME</a></p>
                 <p><a href="verification.html" class="nav-link">VERIFY</a></p>
-                <p><a href="#" class="nav-link">REPORTS</a></p>
+                <p><a href="report.html" class="nav-link">REPORTS</a></p>
             </div>
             <div class="icons">
                 <button><i class="fa-solid fa-gear"></i></button>
@@ -418,6 +418,158 @@
             }
         });
     </script>
+    
+    <!-- Add verification stats and projects sections -->
+    <div class="verification-dashboard">
+        <div class="stats-section">
+            <h2>Verification Statistics</h2>
+            <div id="verification-stats" class="stats-container">
+                <!-- Stats will be loaded here -->
+            </div>
+        </div>
+        
+        <div class="projects-section">
+            <h2>Pending Projects for Verification</h2>
+            <div id="pending-projects-container" class="projects-container">
+                <!-- Projects will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include verification API -->
+    <script src="verification-api.js"></script>
+    
+    <style>
+        .verification-dashboard {
+            margin: 20px;
+            padding: 20px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+            color: #007bff;
+        }
+        
+        .projects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .project-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-under_review { background: #d1ecf1; color: #0c5460; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        
+        .project-details p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        
+        .project-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        
+        .btn:hover { opacity: 0.8; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover { color: black; }
+        
+        .modal-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .no-projects {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 40px;
+        }
+    </style>
 </body>
 
 </html>

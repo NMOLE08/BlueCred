@@ -159,7 +159,7 @@ const ingestMLWebhook = async (req, res) => {
         projectName: `ML Generated Project ${projectId}`,
         projectDescription: 'Auto-generated project from ML biomass estimation.',
         projectLocation: 'ML Estimation',
-        projectType: 'biomass'
+        projectType: 'other'
       });
       await project.save();
       
@@ -180,17 +180,41 @@ const ingestMLWebhook = async (req, res) => {
       inputCarbonKg: carbonKg,
       calculatedTonnes: tonnes
     };
-    project.verificationStatus = autoApprove ? 'pending' : 'pending';
+    // Only set to pending if not already finalized (avoid downgrading approved/rejected)
+    if (!['approved', 'rejected'].includes(project.verificationStatus)) {
+      project.verificationStatus = 'pending';
+    }
 
     await project.save();
 
     let mintResult = null;
+    
+    // Check if project is verified before minting
     if (autoApprove && tokensWhole > 0) {
+      // Reload project to get the latest verification status from database
+      const currentProject = await Project.findOne({ projectId }).populate('ngoId', 'organizationName metamaskAccount.address');
+      
+      console.log(`[DEBUG] Project ${projectId} verification status: ${currentProject.verificationStatus}`);
+      
+      // Strict check: only allow minting if explicitly approved
+      if (currentProject.verificationStatus !== 'approved') {
+        return res.status(400).json({
+          success: false,
+          message: `Cannot mint tokens for unverified project. Current status: ${currentProject.verificationStatus}. Project must be approved by NCCR authorities first.`,
+          data: {
+            projectId,
+            verificationStatus: currentProject.verificationStatus,
+            tokensCalculated: tokensWhole,
+            minted: false
+          }
+        });
+      }
+      
       try {
-        project.blockchainStatus = 'minting';
-        await project.save();
+        currentProject.blockchainStatus = 'minting';
+        await currentProject.save();
 
-        const toAddress = recipientAddress || (project.ngoId?.metamaskAccount?.address);
+        const toAddress = recipientAddress || (currentProject.ngoId?.metamaskAccount?.address);
         if (!toAddress) {
           throw new Error('Recipient address is required for auto-approve minting');
         }
@@ -199,25 +223,24 @@ const ingestMLWebhook = async (req, res) => {
         mintResult = await blockchainService.mintTokensToNGO(
           toAddress,
           tokensWhole,
-          project.projectId,
-          project.projectName,
-          project.ngoId?.organizationName || 'Unknown NGO'
+          currentProject.projectId,
+          currentProject.projectName,
+          currentProject.ngoId?.organizationName || 'Unknown NGO'
         );
 
         if (mintResult.success) {
-          project.blockchainStatus = 'minted';
-          project.transactionHash = mintResult.transactionHash;
-          project.tokensMinted = mintResult.tokensMinted;
-          project.verificationStatus = 'approved';
-          await project.save();
+          currentProject.blockchainStatus = 'minted';
+          currentProject.transactionHash = mintResult.transactionHash;
+          currentProject.tokensMinted = mintResult.tokensMinted;
+          await currentProject.save();
         } else {
-          project.blockchainStatus = 'failed';
-          await project.save();
+          currentProject.blockchainStatus = 'failed';
+          await currentProject.save();
         }
       } catch (mintErr) {
         console.error('ingestMLWebhook mint error:', mintErr);
-        project.blockchainStatus = 'failed';
-        await project.save();
+        currentProject.blockchainStatus = 'failed';
+        await currentProject.save();
         return res.status(500).json({ success: false, message: 'Minting failed', error: mintErr.message });
       }
     }

@@ -51,10 +51,10 @@
                 <div class="dropdown">
                     <button class="dropbtn">Verification Outcome <span><i class="fa-solid fa-angle-down"></i></span></button>
                     <div class="dropdown-content">
-                      <a href="#">Rejected</a>
-                      <a href="#">Approved</a>
-                      <a href="#">In Review</a>
-                      <a href="#">Send Back for Reupload</a>
+                      <a href="#" data-value="rejected">Rejected</a>
+                      <a href="#" data-value="approved">Approved</a>
+                      <a href="#" data-value="in_review">In Review</a>
+                      <a href="#" data-value="reupload">Send Back for Reupload</a>
                     </div>
                 <div class="textarea">
                     <input type="textarea" placeholder="NCCR Reviewer Comment">
@@ -62,7 +62,13 @@
                 <div class="textarea">
                     <input type="textarea" placeholder="BCRs To Issue">
                 </div>
-                <input type="button" id="button" value="Final Verification" >
+                <div class="textarea">
+                    <input id="project-id" type="text" placeholder="Project ID (e.g., PRJ_FLUTTER_001)">
+                </div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <button id="verify-btn" disabled style="padding:10px 16px; border:none; border-radius:8px; background:#a1a1aa; color:white; cursor:not-allowed;">Verify</button>
+                    <a id="check-carbons-btn" href="http://127.0.0.1:5002/" target="_blank" style="text-decoration:none; padding:10px 16px; border:none; border-radius:8px; background:#6d28d9; color:white; display:inline-block;">Check Carbons</a>
+                </div>
             </div>
         </div>
     </main>
@@ -71,6 +77,9 @@
         // Dropdown functionality
         document.addEventListener('DOMContentLoaded', function() {
             const dropdowns = document.querySelectorAll('.dropdown');
+            const verifyBtn = document.getElementById('verify-btn');
+            const projectIdInput = document.getElementById('project-id');
+            let selectedOutcome = null;
             
             dropdowns.forEach(dropdown => {
                 const dropbtn = dropdown.querySelector('.dropbtn');
@@ -95,7 +104,20 @@
                 dropdownItems.forEach(item => {
                     item.addEventListener('click', function(e) {
                         e.preventDefault();
-                        dropbtn.textContent = this.textContent + ' <span><i class="fa-solid fa-angle-down"></i></span>';
+                        const value = this.getAttribute('data-value');
+                        selectedOutcome = value;
+                        // Set button label; if Approved, show green tick
+                        if (value === 'approved') {
+                            dropbtn.innerHTML = 'Approved ✅ <span><i class="fa-solid fa-angle-down"></i></span>';
+                            verifyBtn.disabled = false;
+                            verifyBtn.style.background = '#16a34a';
+                            verifyBtn.style.cursor = 'pointer';
+                        } else {
+                            dropbtn.innerHTML = this.textContent + ' <span><i class="fa-solid fa-angle-down"></i></span>';
+                            verifyBtn.disabled = true;
+                            verifyBtn.style.background = '#a1a1aa';
+                            verifyBtn.style.cursor = 'not-allowed';
+                        }
                         dropdown.classList.remove('active');
                     });
                 });
@@ -106,6 +128,43 @@
                 dropdowns.forEach(dropdown => {
                     dropdown.classList.remove('active');
                 });
+            });
+
+            // Verify button logic: only works when outcome is approved
+            verifyBtn.addEventListener('click', async () => {
+                if (verifyBtn.disabled) return;
+                const projectId = (projectIdInput.value || '').trim();
+                if (!projectId) {
+                    alert('Please enter a Project ID (e.g., PRJ_FLUTTER_001)');
+                    return;
+                }
+
+                try {
+                    verifyBtn.textContent = 'Verifying...';
+                    verifyBtn.disabled = true;
+                    verifyBtn.style.background = '#a1a1aa';
+                    const resp = await fetch(`http://127.0.0.1:5001/api/verification/project/${encodeURIComponent(projectId)}/verify`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'approved', comments: 'Approved via NCCR report page', approvedCarbonCredits: 0 })
+                    });
+                    const data = await resp.json();
+                    if (resp.ok && data.success) {
+                        verifyBtn.textContent = 'Verified ✅';
+                        verifyBtn.style.background = '#16a34a';
+                        verifyBtn.disabled = true;
+                    } else {
+                        verifyBtn.textContent = 'Verify';
+                        verifyBtn.disabled = false;
+                        verifyBtn.style.background = '#16a34a';
+                        alert(data.message || 'Verification failed');
+                    }
+                } catch (err) {
+                    verifyBtn.textContent = 'Verify';
+                    verifyBtn.disabled = false;
+                    verifyBtn.style.background = '#16a34a';
+                    alert('Network error while verifying: ' + err.message);
+                }
             });
         });
     </script>

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:blue_carbon_app/data/dummy_project.dart';
 import 'package:blue_carbon_app/models/project.dart';
 import 'package:blue_carbon_app/screens/add_data_screen.dart';
+import 'package:blue_carbon_app/services/project_service.dart';
 
 class HomepageScreen extends StatefulWidget {
   const HomepageScreen({super.key});
@@ -13,6 +14,37 @@ class HomepageScreen extends StatefulWidget {
 class _HomepageScreenState extends State<HomepageScreen> {
   // State variable to track the selected index of the bottom navigation bar
   int _selectedIndex = 0;
+  List<Project> _projects = [];
+  bool _isLoading = true;
+  Map<String, dynamic>? _stats;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final projects = await ProjectService.getAllProjects();
+      final stats = await ProjectService.getVerificationStats();
+      
+      setState(() {
+        _projects = projects;
+        _stats = stats;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
