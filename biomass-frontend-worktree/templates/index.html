@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Underwater Biomass Estimation</title>
+    <title>BlueCred Biomass Tokenization</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -32,37 +32,97 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+        .token-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        .token-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        .mint-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transition: all 0.3s ease;
+        }
+        .mint-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+        }
+        .cancel-link {
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .cancel-link:hover {
+            color: #374151;
+        }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-blue-600 text-white p-4 shadow-lg">
+    <nav class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">🌊 Underwater Biomass Estimation</h1>
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-leaf text-2xl"></i>
+                <h1 class="text-2xl font-bold">BlueCred Biomass Tokenization</h1>
+            </div>
             <div class="flex items-center space-x-4">
                 <span id="status" class="text-blue-100">Ready</span>
                 <div class="w-4 h-4 rounded-full bg-green-500" id="status-indicator"></div>
+                <a href="http://localhost:8000/report.html" class="cancel-link text-sm hover:text-white">
+                    <i class="fas fa-times mr-1"></i>Cancel
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
+        <!-- Project Info Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8" id="project-info">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-gray-800">
+                    <i class="fas fa-project-diagram mr-2 text-blue-600"></i>
+                    Project Tokenization
+                </h2>
+                <div class="flex items-center space-x-2">
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        <i class="fas fa-check-circle mr-1"></i>Approved
+                    </span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Project ID</label>
+                    <input type="text" id="project-id" value="PRJ_FLUTTER_002" class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
+                    <input type="text" value="Mangrove Restoration" class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <input type="text" value="Mumbai, India" class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+                </div>
+            </div>
+        </div>
+
         <!-- Upload Section -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8 text-center" id="upload-section">
-            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Underwater Biomass Estimation Demo</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Biomass Estimation & Tokenization</h2>
             <div class="max-w-2xl mx-auto">
-                <div class="bg-blue-50 p-6 rounded-lg border-2 border-dashed border-blue-200">
-                    <i class="fas fa-play-circle text-5xl text-blue-500 mb-4"></i>
-                    <h3 class="text-xl font-medium text-gray-800 mb-2">Run the Demo</h3>
-                    <p class="text-gray-600 mb-6">Click the button below to see biomass estimation in action</p>
-                    <button id="run-demo" class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-play mr-2"></i> Start Demo
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border-2 border-dashed border-blue-200">
+                    <i class="fas fa-video text-5xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-medium text-gray-800 mb-2">Process Underwater Footage</h3>
+                    <p class="text-gray-600 mb-6">Upload or process demo footage for biomass estimation and carbon credit tokenization</p>
+                    <button id="run-demo" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
+                        <i class="fas fa-play mr-2"></i> Start Biomass Analysis
                     </button>
                 </div>
                 <div class="mt-6 text-sm text-gray-500">
-                    <p>This is a demonstration using pre-loaded sample footage.</p>
-                    <p>Estimated processing time: 2 seconds</p>
+                    <p><i class="fas fa-info-circle mr-1"></i>This will analyze underwater footage and calculate carbon credits for tokenization.</p>
+                    <p><i class="fas fa-clock mr-1"></i>Estimated processing time: 2-5 seconds</p>
                 </div>
             </div>
         </div>
@@ -113,50 +173,141 @@
 
         <!-- Results Section -->
         <div id="results-section" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">Biomass Estimation Results</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">
+                <i class="fas fa-chart-line mr-2 text-green-600"></i>
+                Biomass Analysis & Tokenization Results
+            </h2>
             
-            <!-- Main Biomass Result -->
-            <div class="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-xl mb-8 text-center">
-                <div class="max-w-2xl mx-auto">
-                    <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg mb-6">
-                        <i class="fas fa-leaf text-4xl text-green-600"></i>
+            <!-- Main Results Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Biomass Results -->
+                <div class="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">
+                        <i class="fas fa-leaf mr-2 text-green-600"></i>
+                        Biomass Analysis
+                    </h3>
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
+                            <i class="fas fa-weight text-3xl text-green-600"></i>
+                        </div>
+                        <h4 class="text-lg font-medium text-gray-700 mb-2">Estimated Total Biomass</h4>
+                        <p id="final-biomass" class="text-4xl font-bold text-green-700">54.5 kg</p>
                     </div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Estimated Total Biomass</h3>
-                    <p id="final-biomass" class="text-5xl font-bold text-green-700 mb-4">54.5 kg</p>
-                    <p class="text-gray-600 mb-6">Based on analysis of the underwater footage</p>
                     
-                    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Average per frame</p>
-                            <p class="text-xl font-semibold text-blue-700">8.0 kg</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                            <p class="text-xs text-gray-500">Carbon kg</p>
+                            <p id="carbon-kg" class="text-lg font-semibold text-blue-700">27.25</p>
                         </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-sm text-gray-500">Frames analyzed</p>
-                            <p class="text-xl font-semibold text-blue-700">120</p>
+                        <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                            <p class="text-xs text-gray-500">Confidence</p>
+                            <p id="confidence-score" class="text-lg font-semibold text-purple-700">95%</p>
                         </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                            <p class="text-xs text-gray-500">Frames</p>
+                            <p id="frames-analyzed" class="text-lg font-semibold text-orange-700">120</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                            <p class="text-xs text-gray-500">Objects</p>
+                            <p id="objects-detected" class="text-lg font-semibold text-red-700">45</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tokenization Panel -->
+                <div class="token-card text-white p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold mb-4 text-center">
+                        <i class="fas fa-coins mr-2"></i>
+                        Carbon Credit Tokenization
+                    </h3>
+                    
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-4">
+                            <i class="fas fa-certificate text-3xl text-yellow-300"></i>
+                        </div>
+                        <h4 class="text-lg font-medium mb-2">Carbon Credits to Mint</h4>
+                        <p id="credits-to-mint" class="text-4xl font-bold text-yellow-300">27 NCT</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-white bg-opacity-10 p-3 rounded-lg">
+                            <label class="block text-sm font-medium mb-2">Recipient Address</label>
+                            <input type="text" id="recipient-address" 
+                                   value="0x70997970C51812dc3A010C7d01b50e0d17dc79C8" 
+                                   class="w-full px-3 py-2 rounded bg-white bg-opacity-20 text-white placeholder-gray-300 border border-white border-opacity-30"
+                                   placeholder="Enter wallet address">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white bg-opacity-10 p-3 rounded-lg text-center">
+                                <p class="text-xs opacity-80">Rate</p>
+                                <p class="text-sm font-semibold">1 kg = 1 NCT</p>
+                            </div>
+                            <div class="bg-white bg-opacity-10 p-3 rounded-lg text-center">
+                                <p class="text-xs opacity-80">Status</p>
+                                <p id="mint-status" class="text-sm font-semibold">Ready</p>
+                            </div>
+                        </div>
+                        
+                        <button id="mint-tokens" class="mint-button w-full py-3 px-4 rounded-lg text-white font-semibold text-lg">
+                            <i class="fas fa-magic mr-2"></i>
+                            Mint Carbon Credits
+                        </button>
                     </div>
                 </div>
             </div>
             
             <!-- Video Preview -->
             <div class="mb-8">
-                <h3 class="text-lg font-semibold mb-4">Processed Footage</h3>
+                <h3 class="text-lg font-semibold mb-4">
+                    <i class="fas fa-video mr-2 text-blue-600"></i>
+                    Processed Footage
+                </h3>
                 <div class="video-container bg-gray-100 rounded-lg overflow-hidden">
                     <video id="processed-video" controls class="w-full" autoplay>
                         Your browser does not support the video tag.
                     </video>
                 </div>
             </div>
+            
+            <!-- Transaction Details -->
+            <div id="transaction-details" class="hidden bg-gray-50 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-4">
+                    <i class="fas fa-receipt mr-2 text-green-600"></i>
+                    Transaction Details
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Transaction Hash</label>
+                        <p id="tx-hash" class="font-mono text-sm bg-white p-2 rounded border">0x...</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Block Number</label>
+                        <p id="block-number" class="font-mono text-sm bg-white p-2 rounded border">-</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Gas Used</label>
+                        <p id="gas-used" class="font-mono text-sm bg-white p-2 rounded border">-</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <p id="tx-status" class="font-mono text-sm bg-white p-2 rounded border text-green-600">✅ Success</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Actions -->
         <div id="actions-section" class="hidden flex justify-center space-x-4 mt-8">
-            <button id="process-again" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+            <button id="process-again" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
                 <i class="fas fa-redo mr-2"></i>Process Another Video
             </button>
-            <button id="download-report" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors">
+            <button id="download-report" class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-teal-700 transition-all transform hover:scale-105">
                 <i class="fas fa-download mr-2"></i>Download Report
             </button>
+            <a href="http://localhost:8000/report.html" class="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all transform hover:scale-105 text-decoration-none">
+                <i class="fas fa-arrow-left mr-2"></i>Back to NCCR Report
+            </a>
         </div>
     </div>
 
@@ -170,5 +321,113 @@
 
     <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Tokenization functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mintButton = document.getElementById('mint-tokens');
+            const recipientAddress = document.getElementById('recipient-address');
+            const projectId = document.getElementById('project-id').value;
+            const finalBiomass = document.getElementById('final-biomass').textContent;
+            const creditsToMint = document.getElementById('credits-to-mint').textContent;
+            
+            if (mintButton) {
+                mintButton.addEventListener('click', async function() {
+                    if (!recipientAddress.value.trim()) {
+                        alert('Please enter a recipient wallet address');
+                        return;
+                    }
+                    
+                    try {
+                        // Update UI to show processing
+                        mintButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Minting...';
+                        mintButton.disabled = true;
+                        document.getElementById('mint-status').textContent = 'Processing...';
+                        
+                        // Extract numeric values
+                        const biomassKg = parseFloat(finalBiomass);
+                        const carbonKg = Math.round(biomassKg * 0.5); // 50% conversion rate
+                        const credits = Math.round(carbonKg);
+                        
+                        // Call tokenization API
+                        const response = await fetch(`http://127.0.0.1:5001/api/projects/${projectId}/ml-webhook`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-ml-secret': '7a3d9f2b6c4e8a1d5f0c3b2a9e7d4c1f8b6a3d2e0f1c4b7a9d3e5f6a1b2c3d4e'
+                            },
+                            body: JSON.stringify({
+                                carbonKg: carbonKg,
+                                confidenceScore: 0.95,
+                                modelVersion: 'biomass-frontend-v2',
+                                autoApprove: true,
+                                recipientAddress: recipientAddress.value.trim()
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success && result.data.minted) {
+                            // Show success
+                            mintButton.innerHTML = '<i class="fas fa-check mr-2"></i>Minted Successfully!';
+                            mintButton.classList.remove('mint-button');
+                            mintButton.classList.add('bg-green-600');
+                            document.getElementById('mint-status').textContent = 'Completed';
+                            
+                            // Show transaction details
+                            const txDetails = document.getElementById('transaction-details');
+                            if (txDetails && result.data.transactionHash) {
+                                document.getElementById('tx-hash').textContent = result.data.transactionHash;
+                                document.getElementById('block-number').textContent = result.data.blockNumber || 'Pending';
+                                document.getElementById('gas-used').textContent = result.data.gasUsed || 'Pending';
+                                txDetails.classList.remove('hidden');
+                            }
+                            
+                            // Show success message
+                            setTimeout(() => {
+                                alert(`Successfully minted ${credits} NCT tokens!\n\nTransaction Hash: ${result.data.transactionHash || 'Processing...'}`);
+                            }, 500);
+                        } else {
+                            throw new Error(result.message || 'Tokenization failed');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Tokenization error:', error);
+                        
+                        // Reset UI
+                        mintButton.innerHTML = '<i class="fas fa-magic mr-2"></i>Mint Carbon Credits';
+                        mintButton.disabled = false;
+                        document.getElementById('mint-status').textContent = 'Failed';
+                        
+                        alert('Tokenization failed: ' + error.message);
+                    }
+                });
+            }
+            
+            // Update carbon calculation when biomass is updated
+            const biomassObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                        const biomassText = document.getElementById('final-biomass').textContent;
+                        const biomassKg = parseFloat(biomassText);
+                        if (!isNaN(biomassKg)) {
+                            const carbonKg = Math.round(biomassKg * 0.5);
+                            const credits = Math.round(carbonKg);
+                            document.getElementById('carbon-kg').textContent = carbonKg;
+                            document.getElementById('credits-to-mint').textContent = credits + ' NCT';
+                        }
+                    }
+                });
+            });
+            
+            const biomassElement = document.getElementById('final-biomass');
+            if (biomassElement) {
+                biomassObserver.observe(biomassElement, {
+                    childList: true,
+                    characterData: true,
+                    subtree: true
+                });
+            }
+        });
+    </script>
 </body>
 </html>
