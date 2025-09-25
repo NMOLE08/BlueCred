@@ -1,0 +1,41 @@
+aspect_ratio: !!python/object/apply:numpy._core.multiarray.scalar
+- &id001 !!python/object/apply:numpy.dtype
+  args:
+  - f8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  Qym+3tNkuT8=
+avg_blue: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  Kk27T7n9xT8=
+avg_green: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  id4Y6BJWwT8=
+avg_red: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  Q0irklg5yj8=
+bbox_area: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  IT4m3ZnTvj8=
+canopy_area: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  OnSV0pmlwT8=
+equivalent_radius: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  IeT4hAqxwD8=
