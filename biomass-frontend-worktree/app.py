@@ -145,15 +145,16 @@ except Exception as e:
 
 @app.route('/')
 def index():
-    # Path to the demo video
-    demo_video_path = os.path.join('practice', 'demo.mp4')
+    # Path to the demo video - use absolute path
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    demo_video_path = os.path.join(base_dir, 'practice', 'demo.mp4')
     
     # Check if demo video exists
     if not os.path.exists(demo_video_path):
-        return "Demo video not found. Please ensure demo.mp4 exists in the practice directory."
+        return f"Demo video not found. Please ensure demo.mp4 exists in the practice directory. Looking for: {demo_video_path}"
     
     # Copy demo video to static folder if not already there
-    static_demo_path = os.path.join('static', 'demo', 'demo.mp4')
+    static_demo_path = os.path.join(base_dir, 'static', 'demo', 'demo.mp4')
     os.makedirs(os.path.dirname(static_demo_path), exist_ok=True)
     
     import shutil
@@ -161,13 +162,14 @@ def index():
         shutil.copy2(demo_video_path, static_demo_path)
     
     # Render template with demo video path
-    return render_template('index.html', demo_video=f'/static/demo/demo.mp4')
+    return render_template('carbon-count.html', demo_video=f'/static/demo/demo.mp4')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     try:
         # Always use the demo video
-        demo_video_path = os.path.join('static', 'demo', 'demo.mp4')
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        demo_video_path = os.path.join(base_dir, 'static', 'demo', 'demo.mp4')
         
         # Check if demo video exists
         if not os.path.exists(demo_video_path):
@@ -208,4 +210,4 @@ def stop_processing():
     return jsonify({'message': 'Processing stopped'})
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    app.run(debug=True, threaded=True, port=5002, host='0.0.0.0')
