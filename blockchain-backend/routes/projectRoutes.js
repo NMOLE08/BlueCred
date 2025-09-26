@@ -4,6 +4,8 @@ const projectController = require('../controllers/projectController');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const { validateObjectId, validateProjectData, validateMLAnalysis, validateVerificationData } = require('../middleware/validation');
 
+// Public routes (no authentication required)
+
 // Public ML webhook (secured by shared secret header, not JWT)
 router.post('/:projectId/ml-webhook', projectController.ingestMLWebhook);
 
@@ -12,6 +14,9 @@ router.get('/public/summaries', projectController.getProjectSummaries);
 
 // Seed a demo project if none exist (protected by x-ml-secret header)
 router.post('/seed-demo', projectController.seedDemoProject);
+
+// Create a pre-approved biomass demo project (protected by x-ml-secret header)
+router.post('/create-biomass-demo', projectController.createBiomassDemoProject);
 
 // All other routes require authentication
 router.use(verifyToken);

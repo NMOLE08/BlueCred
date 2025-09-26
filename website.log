@@ -1,0 +1,16 @@
+::1 - - [26/Sep/2025 04:31:34] "GET /report.html HTTP/1.1" 200 -
+::1 - - [26/Sep/2025 04:34:02] "GET /nccr-authorities.html HTTP/1.1" 200 -
+::1 - - [26/Sep/2025 04:44:25] "GET /nccr-authorities.html HTTP/1.1" 200 -
+::1 - - [26/Sep/2025 06:01:39] "GET /report.html HTTP/1.1" 200 -
+::1 - - [26/Sep/2025 06:01:47] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:48] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:48] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:48] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:48] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:49] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:49] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:49] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:49] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:50] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:50] "GET /report.html HTTP/1.1" 304 -
+::1 - - [26/Sep/2025 06:01:50] "GET /report.html HTTP/1.1" 304 -

@@ -23,12 +23,27 @@ const uploadSection = document.getElementById('upload-section');
 const statusIndicator = document.getElementById('status-indicator');
 const statusText = document.getElementById('status');
 
+// Minting elements
+const mintTokensBtn = document.getElementById('mint-tokens');
+const recipientAddress = document.getElementById('recipient-address');
+const manualCarbonKg = document.getElementById('manual-carbon-kg');
+const creditsToMint = document.getElementById('credits-to-mint');
+const mintStatus = document.getElementById('mint-status');
+const carbonKg = document.getElementById('carbon-kg');
+const finalBiomass = document.getElementById('final-biomass');
+const transactionDetails = document.getElementById('transaction-details');
+const txHash = document.getElementById('tx-hash');
+const blockNumber = document.getElementById('block-number');
+const gasUsed = document.getElementById('gas-used');
+const txStatus = document.getElementById('tx-status');
+
 // Chart instance
 let biomassChart = null;
 
 // State
 let processing = false;
 let progressInterval = null;
+let mintCallCount = 0;
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,6 +52,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (runDemoBtn) {
         runDemoBtn.addEventListener('click', () => {
             uploadFile();
+        });
+    }
+    
+    // Setup mint tokens button
+    if (mintTokensBtn) {
+        console.log('Setting up mint tokens button event listener');
+        mintTokensBtn.addEventListener('click', (event) => {
+            console.log(`mintTokens button clicked (mintCallCount: ${mintCallCount})`);
+            console.log('Manual carbon input value:', manualCarbonKg.value);
+            console.log('Detected carbon value:', carbonKg.textContent);
+            event.preventDefault(); // Prevent any default form behavior
+            event.stopPropagation(); // Prevent event bubbling
+            mintTokens();
+        });
+        console.log('Mint tokens button event listener setup complete');
+    }
+    
+    // Setup manual carbon input change listener
+    if (manualCarbonKg) {
+        console.log('Setting up manual carbon input change listener');
+        manualCarbonKg.addEventListener('input', (event) => {
+            console.log('Manual carbon input changed:', event.target.value);
+            updateCreditsToMint();
         });
     }
     
@@ -269,21 +307,44 @@ function showResults(data) {
         }
     }
     
-    // Update biomass metrics with demo values
-    const totalBiomass = data.total_biomass || 54.5; // Default demo value
-    const avgBiomass = data.avg_biomass || 8.0; // Default demo value
+    // Check if user has already entered manual input
+    const manualValue = parseFloat(manualCarbonKg.value);
+    const hasManualInput = manualCarbonKg.value && manualCarbonKg.value.trim() !== '' && !isNaN(manualValue) && manualValue > 0;
     
-    // Update the final biomass display
-    const finalBiomassElement = document.getElementById('final-biomass');
-    if (finalBiomassElement) {
-        finalBiomassElement.textContent = `${totalBiomass.toFixed(1)} kg`;
+    console.log('showResults: hasManualInput =', hasManualInput, 'manualValue =', manualValue);
+    
+    // Only update biomass metrics if user hasn't entered manual input
+    if (!hasManualInput) {
+        console.log('showResults: No manual input, updating with demo values');
+        
+        // Update biomass metrics with demo values
+        const totalBiomass = data.total_biomass || 54.5; // Default demo value
+        const avgBiomass = data.avg_biomass || 8.0; // Default demo value
+        
+        // Update the final biomass display
+        const finalBiomassElement = document.getElementById('final-biomass');
+        if (finalBiomassElement) {
+            finalBiomassElement.textContent = `${totalBiomass.toFixed(1)} kg`;
+        }
+        
+        // Update carbon kg (typically 50% of biomass) - only if no manual input
+        const carbonKgValue = totalBiomass * 0.5;
+        const carbonKgElement = document.getElementById('carbon-kg');
+        if (carbonKgElement) {
+            carbonKgElement.textContent = carbonKgValue.toFixed(2);
+        }
+        
+        // Update the average biomass display
+        const avgBiomassElement = document.querySelector('#results-section .text-xl.font-semibold.text-blue-700');
+        if (avgBiomassElement) {
+            avgBiomassElement.textContent = `${avgBiomass.toFixed(1)} kg`;
+        }
+    } else {
+        console.log('showResults: Manual input detected, preserving user input');
     }
     
-    // Update the average biomass display
-    const avgBiomassElement = document.querySelector('#results-section .text-xl.font-semibold.text-blue-700');
-    if (avgBiomassElement) {
-        avgBiomassElement.textContent = `${avgBiomass.toFixed(1)} kg`;
-    }
+    // Update credits to mint display (this will respect manual input if present)
+    updateCreditsToMint();
     
     // Update status and scroll to results
     updateStatus('Analysis complete', 'green');
@@ -503,3 +564,181 @@ window.addEventListener('beforeunload', () => {
         fetch('/stop_processing', { method: 'POST' });
     }
 });
+
+// Minting Functions
+function updateCreditsToMint() {
+    // Get carbon kg from manual input or use detected value
+    const manualValue = parseFloat(manualCarbonKg.value);
+    const detectedValue = parseFloat(carbonKg.textContent) || 27.25;
+    
+    // Use manual value if provided and valid, otherwise use detected value
+    let carbonKgValue;
+    let sourceText;
+    let isManual = false;
+    
+    if (manualCarbonKg.value && manualCarbonKg.value.trim() !== '' && !isNaN(manualValue) && manualValue > 0) {
+        carbonKgValue = manualValue;
+        sourceText = ` (manual: ${manualValue} kg)`;
+        isManual = true;
+    } else {
+        carbonKgValue = detectedValue;
+        sourceText = ` (detected: ${detectedValue} kg)`;
+        isManual = false;
+    }
+    
+    console.log(`updateCreditsToMint: carbonKgValue = ${carbonKgValue}${sourceText}`);
+    
+    // Convert kg to tonnes (1 tonne = 1000 kg, 1 tonne = 1 NCT)
+    const tonnes = carbonKgValue / 1000;
+    const nctTokens = Math.round(tonnes * 100) / 100; // Round to 2 decimal places
+    
+    console.log(`updateCreditsToMint: ${carbonKgValue} kg = ${tonnes} tonnes = ${nctTokens} NCT`);
+    
+    // Update credits to mint display
+    if (creditsToMint) {
+        creditsToMint.textContent = `${nctTokens} NCT`;
+        
+        // Add visual indicator for manual vs detected
+        if (isManual) {
+            creditsToMint.className = 'text-2xl font-bold text-green-600';
+            creditsToMint.title = 'Using manual carbon input';
+        } else {
+            creditsToMint.className = 'text-2xl font-bold text-blue-600';
+            creditsToMint.title = 'Using detected carbon values';
+        }
+    }
+    
+    // Update source indicator if it exists
+    const sourceIndicator = document.getElementById('carbon-source-indicator');
+    if (sourceIndicator) {
+        if (isManual) {
+            sourceIndicator.textContent = 'Manual Input';
+            sourceIndicator.className = 'text-xs font-semibold text-green-600';
+        } else {
+            sourceIndicator.textContent = 'Detected';
+            sourceIndicator.className = 'text-xs font-semibold text-blue-600';
+        }
+    }
+}
+
+async function mintTokens() {
+    mintCallCount++;
+    console.log(`=== mintTokens called (call #${mintCallCount}) ===`);
+    
+    // Prevent multiple rapid clicks
+    if (mintTokensBtn.disabled) {
+        console.log(`mintTokens (#${mintCallCount}): Button already disabled, ignoring duplicate call`);
+        return;
+    }
+    
+    if (!recipientAddress.value) {
+        alert('Please enter a recipient address');
+        return;
+    }
+    
+    // Get carbon kg from manual input or use detected value (same logic as updateCreditsToMint)
+    const manualValue = parseFloat(manualCarbonKg.value);
+    const detectedValue = parseFloat(carbonKg.textContent) || 27.25;
+    
+    let carbonKgValue;
+    let sourceText;
+    
+    if (manualCarbonKg.value && manualCarbonKg.value.trim() !== '' && !isNaN(manualValue) && manualValue > 0) {
+        carbonKgValue = manualValue;
+        sourceText = ` (manual: ${manualValue} kg)`;
+        console.log(`mintTokens: Using MANUAL input: ${manualValue} kg`);
+    } else {
+        carbonKgValue = detectedValue;
+        sourceText = ` (detected: ${detectedValue} kg)`;
+        console.log(`mintTokens: Using DETECTED value: ${detectedValue} kg`);
+    }
+    
+    console.log(`mintTokens: Final carbonKgValue = ${carbonKgValue}${sourceText}`);
+    
+    // Update status
+    if (mintStatus) {
+        mintStatus.textContent = 'Minting...';
+        mintStatus.className = 'text-sm font-semibold text-yellow-300';
+    }
+    
+    if (mintTokensBtn) {
+        mintTokensBtn.disabled = true;
+        mintTokensBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Minting...';
+    }
+    
+    try {
+        // Call the backend to mint tokens
+        const response = await fetch('http://127.0.0.1:5001/api/projects/BIOMASS_DEMO_PROJECT/ml-webhook', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-ml-secret': '7a3d9f2b6c4e8a1d5f0c3b2a9e7d4c1f8b6a3d2e0f1c4b7a9d3e5f6a1b2c3d4e'
+            },
+            body: JSON.stringify({
+                carbonKg: carbonKgValue,
+                recipientAddress: recipientAddress.value,
+                biomassData: {
+                    total_biomass: parseFloat(finalBiomass.textContent) || 54.5,
+                    carbon_kg: carbonKgValue,
+                    confidence: 95
+                }
+            })
+        });
+        
+        console.log('mintTokens: Response status:', response.status);
+        
+        const result = await response.json();
+        console.log('mintTokens: Response result:', result);
+        
+        if (response.ok) {
+            // Success
+            console.log('mintTokens: SUCCESS - Minting completed successfully');
+            console.log(`mintTokens: Minted ${result.data.tokensRoundedDown} NCT tokens`);
+            console.log(`mintTokens: Transaction hash: ${result.data.transactionHash}`);
+            
+            if (mintStatus) {
+                mintStatus.textContent = 'Success';
+                mintStatus.className = 'text-sm font-semibold text-green-300';
+            }
+            
+            // Show transaction details
+            if (transactionDetails) {
+                transactionDetails.classList.remove('hidden');
+                if (txHash) txHash.textContent = result.data.transactionHash || '0x...';
+                if (blockNumber) blockNumber.textContent = result.data.blockNumber || '-';
+                if (gasUsed) gasUsed.textContent = result.data.gasUsed || '-';
+                if (txStatus) txStatus.textContent = '✅ Success';
+            }
+            
+            // Calculate tokens for display
+            const tonnes = carbonKgValue / 1000;
+            const nctTokens = Math.round(tonnes * 100) / 100;
+            
+            alert(`Successfully minted ${nctTokens} NCT tokens!`);
+        } else {
+            // Error - throw to be caught by catch block
+            throw new Error(result.error || `HTTP ${response.status}: ${result.message || 'Minting failed'}`);
+        }
+    } catch (error) {
+        console.error('mintTokens: ERROR:', error);
+        console.error('mintTokens: Error details:', error.message, error.stack);
+        
+        if (mintStatus) {
+            mintStatus.textContent = 'Failed';
+            mintStatus.className = 'text-sm font-semibold text-red-300';
+        }
+        
+        // Only show error alert if it's not a network error that might be transient
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            alert('Network error: Please check if the backend is running and try again.');
+        } else {
+            alert('Minting failed: ' + error.message);
+        }
+    } finally {
+        // Reset button
+        if (mintTokensBtn) {
+            mintTokensBtn.disabled = false;
+            mintTokensBtn.innerHTML = '<i class="fas fa-magic mr-2"></i>Mint Carbon Credits';
+        }
+    }
+}

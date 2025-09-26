@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/Lenovo/OneDrive/Desktop/BlueCarbon/blue_carbon_app/windows"
+    "cmake.sourceDirectory": "C:/Users/Lenovo/OneDrive/Desktop/BlueCarbon/blue_carbon_app/windows",
+    "git.ignoreLimitWarning": true
 }

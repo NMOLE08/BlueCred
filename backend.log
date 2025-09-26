@@ -1,0 +1,261 @@
+
+> blue-carbon-registry-blockchain-backend@1.0.0 start
+> node server.js
+
+(node:45305) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45305) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+MongoDB Connected: localhost
+Initializing blockchain service...
+Blockchain network connected successfully
+Chain ID: 8546, Block: 91
+Smart contracts initialized
+Initializing MetaMask accounts...
+MetaMask accounts: 0/6 assigned
+
+🌊 Blue Carbon Registry Blockchain Backend Server
+🚀 Server running on port 5001
+🌍 Environment: development
+📊 Health check: http://localhost:5001/health
+🔗 API Base URL: http://localhost:5001/api
+      
+[0mGET /health [32m200[0m 25.228 ms - 358[0m
+[0mGET /config [32m200[0m 0.877 ms - 300[0m
+[0mGET /config [32m200[0m 0.405 ms - 300[0m
+[0mGET /config [32m200[0m 0.260 ms - 300[0m
+[0mGET /config [32m200[0m 0.603 ms - 300[0m
+[0mGET /config [32m200[0m 0.373 ms - 300[0m
+[0mGET /config [32m200[0m 0.171 ms - 300[0m
+[0mGET /config [32m200[0m 0.343 ms - 300[0m
+[0mGET /config [32m200[0m 0.130 ms - 300[0m
+[0mGET /config [32m200[0m 0.267 ms - 300[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+[DEBUG] Project PRJ_FLUTTER_002 verification status: approved
+Creating project PRJ_FLUTTER_002 with 0.03 tons of carbon credits
+Creating project BIOMASS_DEMO_PROJECT with 50 tons of carbon credits
+Minting 0.03 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Minting 50 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Error minting tokens: Error: nonce has already been used (transaction="0x02f9011182216251843b9aca00843b9afb3682addf945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000002b5e3af16b1880000000000000000000000000000000000000000000000000000000000000000001442494f4d4153535f44454d4f5f50524f4a454354000000000000000000000000c001a012e413cf77c6e0c6a235c6bc103163130ab61289ec0412564a8aae2f9dfe4c11a0505517459b8c30f8e404b4a74152d4f27d243f249e25fdc72e39d7df609ba9e6", info={ "error": { "code": -32000, "data": { "data": null, "message": "Nonce too low. Expected nonce to be 82 but got 81. Note that transactions can't be queued when automining." }, "message": "Nonce too low. Expected nonce to be 82 but got 81. Note that transactions can't be queued when automining." } }, code=NONCE_EXPIRED, version=6.15.0)
+    at makeError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/utils/errors.js:137:21)
+    at JsonRpcProvider.getRpcError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:726:49)
+    at /Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:302:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'NONCE_EXPIRED',
+  transaction: '0x02f9011182216251843b9aca00843b9afb3682addf945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000002b5e3af16b1880000000000000000000000000000000000000000000000000000000000000000001442494f4d4153535f44454d4f5f50524f4a454354000000000000000000000000c001a012e413cf77c6e0c6a235c6bc103163130ab61289ec0412564a8aae2f9dfe4c11a0505517459b8c30f8e404b4a74152d4f27d243f249e25fdc72e39d7df609ba9e6',
+  info: {
+    error: {
+      code: -32000,
+      message: "Nonce too low. Expected nonce to be 82 but got 81. Note that transactions can't be queued when automining.",
+      data: [Object]
+    }
+  },
+  shortMessage: 'nonce has already been used'
+}
+Additional minting transaction hash: 0x896b20b3980abac56a9082b3381b900c073a0ad3605f47d5842bb8781e120565
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 116.759 ms - 176[0m
+[0mPOST /api/projects/PRJ_FLUTTER_002/ml-webhook [32m200[0m 121.782 ms - 239[0m
+[0mGET /config [32m200[0m 0.200 ms - 300[0m
+[0mGET /config [32m200[0m 0.264 ms - 300[0m
+[0mGET /config [32m200[0m 0.211 ms - 300[0m
+[0mGET /config [32m200[0m 0.142 ms - 300[0m
+[0mGET /config [32m200[0m 0.149 ms - 300[0m
+[0mGET /config [32m200[0m 0.141 ms - 300[0m
+[0mGET /config [32m200[0m 0.088 ms - 300[0m
+[0mGET /config [32m200[0m 0.152 ms - 300[0m
+[0mGET /config [32m200[0m 0.208 ms - 300[0m
+[0mGET /config [32m200[0m 0.200 ms - 300[0m
+[0mGET /config [32m200[0m 0.154 ms - 300[0m
+[0mGET /config [32m200[0m 0.346 ms - 300[0m
+[0mGET /config [32m200[0m 0.092 ms - 300[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+[DEBUG] Project PRJ_FLUTTER_002 verification status: approved
+Creating project BIOMASS_DEMO_PROJECT with 50 tons of carbon credits
+Creating project PRJ_FLUTTER_002 with 0.03 tons of carbon credits
+Minting 50 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Minting 0.03 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Error minting tokens: Error: nonce has already been used (transaction="0x02f9011182216252843b9aca00843b9af51482ad8b945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000000f50524a5f464c55545445525f3030320000000000000000000000000000000000c001a04a032b60b7c36280235d3650ab1d3ce15cd07d3ade3108a67967e0c93b408f37a012113403f8d75c48e503b2913213191015a9fc1cee4bb6ae548d576dd21e1033", info={ "error": { "code": -32000, "data": { "data": null, "message": "Nonce too low. Expected nonce to be 83 but got 82. Note that transactions can't be queued when automining." }, "message": "Nonce too low. Expected nonce to be 83 but got 82. Note that transactions can't be queued when automining." } }, code=NONCE_EXPIRED, version=6.15.0)
+    at makeError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/utils/errors.js:137:21)
+    at JsonRpcProvider.getRpcError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:726:49)
+    at /Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:302:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'NONCE_EXPIRED',
+  transaction: '0x02f9011182216252843b9aca00843b9af51482ad8b945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000000f50524a5f464c55545445525f3030320000000000000000000000000000000000c001a04a032b60b7c36280235d3650ab1d3ce15cd07d3ade3108a67967e0c93b408f37a012113403f8d75c48e503b2913213191015a9fc1cee4bb6ae548d576dd21e1033',
+  info: {
+    error: {
+      code: -32000,
+      message: "Nonce too low. Expected nonce to be 83 but got 82. Note that transactions can't be queued when automining.",
+      data: [Object]
+    }
+  },
+  shortMessage: 'nonce has already been used'
+}
+Additional minting transaction hash: 0xf8ec3e94c225605a909b3fbd648b10dc57234f27a2e9dd92e292554e0dfb6db8
+[0mPOST /api/projects/PRJ_FLUTTER_002/ml-webhook [32m200[0m 107.155 ms - 176[0m
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 120.674 ms - 239[0m
+[0mGET /config [32m200[0m 0.075 ms - 300[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+Creating project BIOMASS_DEMO_PROJECT with 0.03 tons of carbon credits
+[DEBUG] Project PRJ_FLUTTER_002 verification status: approved
+Creating project PRJ_FLUTTER_002 with 0.03 tons of carbon credits
+Minting 0.03 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Minting 0.03 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Error minting tokens: Error: nonce has already been used (transaction="0x02f9011182216253843b9aca00843b9aefb682ad8b945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000000f50524a5f464c55545445525f3030320000000000000000000000000000000000c080a0a93a8081073ae601cabe12d37df11f3c8563fa48c551d336b476730d9a9fa096a07d8e6d511ff65c40a379354e8d2a9d06aa318216d10bb8c6546c0a26b34659fd", info={ "error": { "code": -32000, "data": { "data": null, "message": "Nonce too low. Expected nonce to be 84 but got 83. Note that transactions can't be queued when automining." }, "message": "Nonce too low. Expected nonce to be 84 but got 83. Note that transactions can't be queued when automining." } }, code=NONCE_EXPIRED, version=6.15.0)
+    at makeError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/utils/errors.js:137:21)
+    at JsonRpcProvider.getRpcError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:726:49)
+    at /Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:302:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'NONCE_EXPIRED',
+  transaction: '0x02f9011182216253843b9aca00843b9aefb682ad8b945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000000f50524a5f464c55545445525f3030320000000000000000000000000000000000c080a0a93a8081073ae601cabe12d37df11f3c8563fa48c551d336b476730d9a9fa096a07d8e6d511ff65c40a379354e8d2a9d06aa318216d10bb8c6546c0a26b34659fd',
+  info: {
+    error: {
+      code: -32000,
+      message: "Nonce too low. Expected nonce to be 84 but got 83. Note that transactions can't be queued when automining.",
+      data: [Object]
+    }
+  },
+  shortMessage: 'nonce has already been used'
+}
+Additional minting transaction hash: 0xa177bcdf1072d3ce373a20adae68247faf8b80cda5537e4d3dd92356bdec3123
+[0mPOST /api/projects/PRJ_FLUTTER_002/ml-webhook [32m200[0m 114.119 ms - 176[0m
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 126.175 ms - 244[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+Creating project BIOMASS_DEMO_PROJECT with 0.03 tons of carbon credits
+[DEBUG] Project PRJ_FLUTTER_002 verification status: approved
+Creating project PRJ_FLUTTER_002 with 0.03 tons of carbon credits
+Minting 0.03 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Minting 0.03 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Error minting tokens: Error: nonce has already been used (transaction="0x02f9011182216254843b9aca00843b9aeb0482adc7945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000001442494f4d4153535f44454d4f5f50524f4a454354000000000000000000000000c080a04e7d42e4675d8e5e462d93796f2317c47771d7016c16b4e9666f2ab0b8aef24da06fc1c775ceb1b01e37fb33ada7da80f1b2a78272bd6219f3b2b08109fcbdf708", info={ "error": { "code": -32000, "data": { "data": null, "message": "Nonce too low. Expected nonce to be 85 but got 84. Note that transactions can't be queued when automining." }, "message": "Nonce too low. Expected nonce to be 85 but got 84. Note that transactions can't be queued when automining." } }, code=NONCE_EXPIRED, version=6.15.0)
+    at makeError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/utils/errors.js:137:21)
+    at JsonRpcProvider.getRpcError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:726:49)
+    at /Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:302:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'NONCE_EXPIRED',
+  transaction: '0x02f9011182216254843b9aca00843b9aeb0482adc7945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000001442494f4d4153535f44454d4f5f50524f4a454354000000000000000000000000c080a04e7d42e4675d8e5e462d93796f2317c47771d7016c16b4e9666f2ab0b8aef24da06fc1c775ceb1b01e37fb33ada7da80f1b2a78272bd6219f3b2b08109fcbdf708',
+  info: {
+    error: {
+      code: -32000,
+      message: "Nonce too low. Expected nonce to be 85 but got 84. Note that transactions can't be queued when automining.",
+      data: [Object]
+    }
+  },
+  shortMessage: 'nonce has already been used'
+}
+Additional minting transaction hash: 0xc843227e11fb8c6002cad258e55c2d249678eff073db539e36ae769d67c0383d
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 113.263 ms - 181[0m
+[0mPOST /api/projects/PRJ_FLUTTER_002/ml-webhook [32m200[0m 124.830 ms - 239[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+Creating project BIOMASS_DEMO_PROJECT with 60 tons of carbon credits
+[DEBUG] Project PRJ_FLUTTER_002 verification status: approved
+Creating project PRJ_FLUTTER_002 with 0.03 tons of carbon credits
+Minting 60 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Minting 0.03 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Error minting tokens: Error: nonce has already been used (transaction="0x02f9011182216255843b9aca00843b9ae6e882ad8b945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000000f50524a5f464c55545445525f3030320000000000000000000000000000000000c001a02654bb2ee1a2477c24a1527a585c11f5f78e66c5e884b56617ef638e8871111da0363d241c96f8494b4e4913b657717849fdd7538cda64d71ac6427a8b0d7f7c5f", info={ "error": { "code": -32000, "data": { "data": null, "message": "Nonce too low. Expected nonce to be 86 but got 85. Note that transactions can't be queued when automining." }, "message": "Nonce too low. Expected nonce to be 86 but got 85. Note that transactions can't be queued when automining." } }, code=NONCE_EXPIRED, version=6.15.0)
+    at makeError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/utils/errors.js:137:21)
+    at JsonRpcProvider.getRpcError (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:726:49)
+    at /Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/ethers/lib.commonjs/providers/provider-jsonrpc.js:302:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 'NONCE_EXPIRED',
+  transaction: '0x02f9011182216255843b9aca00843b9ae6e882ad8b945fbdb2315678afecb367f032d93f642f64180aa380b8a4adeafd0c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8000000000000000000000000000000000000000000000000006a94d74f430000000000000000000000000000000000000000000000000000000000000000000f50524a5f464c55545445525f3030320000000000000000000000000000000000c001a02654bb2ee1a2477c24a1527a585c11f5f78e66c5e884b56617ef638e8871111da0363d241c96f8494b4e4913b657717849fdd7538cda64d71ac6427a8b0d7f7c5f',
+  info: {
+    error: {
+      code: -32000,
+      message: "Nonce too low. Expected nonce to be 86 but got 85. Note that transactions can't be queued when automining.",
+      data: [Object]
+    }
+  },
+  shortMessage: 'nonce has already been used'
+}
+Additional minting transaction hash: 0x3c4616b323f431f758933cf10fd58067b88cee2265f9f6d136d8b1fa79d25a61
+[0mPOST /api/projects/PRJ_FLUTTER_002/ml-webhook [32m200[0m 114.719 ms - 176[0m
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 128.182 ms - 239[0m
+[0mGET /config [32m200[0m 0.145 ms - 300[0m
+[0mGET /config [32m200[0m 0.158 ms - 300[0m
+[0mGET /config [32m200[0m 0.198 ms - 300[0m
+[0mGET /config [32m200[0m 0.236 ms - 300[0m
+[0mGET /config [32m200[0m 0.133 ms - 300[0m
+[0mGET /config [32m200[0m 0.135 ms - 300[0m
+[0mGET /config [32m200[0m 0.139 ms - 300[0m
+[0mGET /config [32m200[0m 0.200 ms - 300[0m
+[0mGET /config [32m200[0m 0.150 ms - 300[0m
+[0mGET /config [32m200[0m 0.149 ms - 300[0m
+[0mGET /config [32m200[0m 0.117 ms - 300[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+Creating project BIOMASS_DEMO_PROJECT with 1 tons of carbon credits
+Minting 1 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Additional minting transaction hash: 0x5141c09a841f97f82964e89fd06ce54bd50019e59d03b324f0aedc9f31c3ee64
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 98.694 ms - 237[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+Creating project BIOMASS_DEMO_PROJECT with 1 tons of carbon credits
+Minting 1 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Additional minting transaction hash: 0xbfa635d18302d597e1119c1eb91ee99f55da5720edb7fad834e93aec6e6fb04a
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 130.194 ms - 237[0m
+[0mGET /config [32m200[0m 0.142 ms - 300[0m
+[0mGET /config [32m200[0m 0.110 ms - 300[0m
+[0mGET /config [32m200[0m 0.198 ms - 300[0m
+[0mGET /config [32m200[0m 0.166 ms - 300[0m
+[0mGET /config [32m200[0m 0.201 ms - 300[0m
+[0mGET /config [32m200[0m 0.142 ms - 300[0m
+[0mGET /config [32m200[0m 0.080 ms - 300[0m
+[0mGET /config [32m200[0m 0.135 ms - 300[0m
+[0mGET /config [32m200[0m 0.116 ms - 300[0m
+[DEBUG] Project verification status: approved
+[DEBUG] Project BIOMASS_DEMO_PROJECT verification status: approved
+Creating project BIOMASS_DEMO_PROJECT with 10 tons of carbon credits
+Minting 10 additional carbon credit tokens to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (existing project)
+Additional minting transaction hash: 0x74953ac6d716c73b963e8fd39b90f6209172b89ef070a9b02f0f06060a080c84
+[0mPOST /api/projects/BIOMASS_DEMO_PROJECT/ml-webhook [32m200[0m 122.636 ms - 239[0m
+[0mGET /config [32m200[0m 0.073 ms - 300[0m
+[0mGET /config [32m200[0m 0.133 ms - 300[0m
+[0mGET /config [32m200[0m 0.188 ms - 300[0m
+[0mGET /config [32m200[0m 0.091 ms - 300[0m
+[0mGET /config [32m200[0m 0.127 ms - 300[0m
+[0mGET /config [32m200[0m 0.122 ms - 300[0m
+[0mGET /config [32m200[0m 0.127 ms - 300[0m
+[0mGET /config [32m200[0m 0.130 ms - 300[0m
+[0mGET /config [32m200[0m 0.212 ms - 300[0m
+[0mGET /config [32m200[0m 0.131 ms - 300[0m
+[0mGET /config [32m200[0m 0.227 ms - 300[0m
+[0mGET /config [32m200[0m 0.073 ms - 300[0m
+[0mGET /config [32m200[0m 0.429 ms - 300[0m
+[0mGET /config [32m200[0m 0.106 ms - 300[0m
+[0mGET /config [32m200[0m 0.127 ms - 300[0m
+[0mGET /config [32m200[0m 0.213 ms - 300[0m
+[0mGET /config [32m200[0m 0.113 ms - 300[0m
+[0mGET /config [32m200[0m 0.174 ms - 300[0m
+[0mGET /config [32m200[0m 0.116 ms - 300[0m
+[0mGET /config [32m200[0m 0.136 ms - 300[0m
+[0mGET /config [32m200[0m 0.076 ms - 300[0m
+[0mGET /config [32m200[0m 0.123 ms - 300[0m
+[0mGET /config [32m200[0m 0.198 ms - 300[0m
+[0mGET /config [32m200[0m 0.190 ms - 300[0m
+[0mGET /config [32m200[0m 0.133 ms - 300[0m
+[0mGET /config [32m200[0m 0.129 ms - 300[0m
+[0mGET /config [32m200[0m 0.087 ms - 300[0m
+[0mGET /config [32m200[0m 0.189 ms - 300[0m
+[0mGET /config [32m200[0m 0.133 ms - 300[0m
+[0mGET /config [32m200[0m 0.074 ms - 300[0m
+[0mGET /config [32m200[0m 0.090 ms - 300[0m
+[0mGET /config [32m200[0m 0.110 ms - 300[0m
+SIGTERM received. Shutting down gracefully...
+/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/mongoose/lib/connection.js:1205
+    throw new MongooseError('Connection.prototype.close() no longer accepts a callback');
+          ^
+
+MongooseError: Connection.prototype.close() no longer accepts a callback
+    at NativeConnection.close (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/node_modules/mongoose/lib/connection.js:1205:11)
+    at process.<anonymous> (/Users/adityajadhav/BlueCred/BlueCred/blockchain-backend/server.js:245:23)
+    at process.emit (node:events:507:28)
+
+Node.js v24.2.0

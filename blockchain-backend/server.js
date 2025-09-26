@@ -135,6 +135,64 @@ app.use('/api/verification', verificationRoutes);
 // Public endpoints for ML UI (no auth)
 app.get('/api/public/projects/summaries', projectController.getProjectSummaries);
 app.post('/api/public/projects/seed-demo', projectController.seedDemoProject);
+app.post('/api/public/projects/create-biomass-demo', projectController.createBiomassDemoProject);
+
+// Serve report page with project data
+app.get('/report', async (req, res) => {
+  try {
+    const { projectId } = req.query;
+    
+    if (!projectId) {
+      return res.status(400).send('Project ID is required');
+    }
+    
+    // Try to find project in database
+    const Project = require('./models/Project');
+    const project = await Project.findOne({ projectId })
+      .populate('ngoId', 'organizationName contactEmail');
+    
+    if (project) {
+      // If project found in database, serve report page with project data
+      const reportHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Report - ${project.projectName}</title>
+    <link rel="stylesheet" href="/report.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="project-report">
+        <h1>Project Report</h1>
+        <div class="project-details">
+            <h2>Project Information</h2>
+            <p><strong>Project ID:</strong> ${project.projectId}</p>
+            <p><strong>Project Name:</strong> ${project.projectName}</p>
+            <p><strong>NGO:</strong> ${project.ngoId?.organizationName || 'Unknown'}</p>
+            <p><strong>Status:</strong> ${project.verificationStatus}</p>
+            <p><strong>Location:</strong> ${project.projectLocation}</p>
+            <p><strong>Carbon Credits:</strong> ${project.mlAnalysis?.carbonCreditsCalculated || 0} NCT</p>
+            <p><strong>Created:</strong> ${new Date(project.createdAt).toLocaleDateString()}</p>
+        </div>
+        <div class="actions">
+            <a href="http://127.0.0.1:5002/?projectId=${projectId}" target="_blank" class="btn btn-primary">Check Carbons</a>
+        </div>
+    </div>
+</body>
+</html>`;
+      res.send(reportHTML);
+    } else {
+      // If project not found, redirect to the static report page
+      res.redirect(`http://localhost:8000/report.html?projectId=${projectId}`);
+    }
+  } catch (error) {
+    console.error('Error serving report page:', error);
+    res.status(500).send('Error loading report page');
+  }
+});
 
 // 404 handler
 app.use('*', (req, res) => {

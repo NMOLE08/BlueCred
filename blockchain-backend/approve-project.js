@@ -6,30 +6,31 @@ async function approveProject() {
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bluecred');
     
-    const project = await Project.findOne({ projectId: 'PRJ_FLUTTER_002' });
+    const projectId = 'PRJ_FLUTTER_002';
+    console.log('Approving project:', projectId);
+    
+    const project = await Project.findOne({ projectId });
+    
     if (!project) {
-      console.log('Project not found');
+      console.log('❌ Project not found');
       return;
     }
     
-    console.log('Before update:');
-    console.log('- Verification Status:', project.verificationStatus);
+    console.log('Current status:', project.verificationStatus);
     
-    // Update verification status
+    // Update project status to approved
     project.verificationStatus = 'approved';
     project.verificationDetails = {
+      verifiedBy: null, // Will be set by proper verification process
       verifiedAt: new Date(),
-      comments: 'Direct approval for integration test',
-      approvedCarbonCredits: 890
+      comments: 'Auto-approved for biomass tokenization demo',
+      approvedCarbonCredits: 1250
     };
     
     await project.save();
-    console.log('✅ Project approved successfully');
     
-    // Verify the update
-    const updatedProject = await Project.findOne({ projectId: 'PRJ_FLUTTER_002' });
-    console.log('After update:');
-    console.log('- Verification Status:', updatedProject.verificationStatus);
+    console.log('✅ Project approved successfully');
+    console.log('New status:', project.verificationStatus);
     
     await mongoose.disconnect();
   } catch (error) {

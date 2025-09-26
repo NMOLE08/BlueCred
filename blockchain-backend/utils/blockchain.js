@@ -128,6 +128,7 @@ class BlockchainService {
       } else {
         // For existing projects, use mintAdditionalCredits
         console.log(`Minting ${carbonCreditsInTons} additional carbon credit tokens to ${ngoAddress} (existing project)`);
+        // Convert carbon credits to wei for the smart contract (1 token = 1 wei for minting)
         const carbonCreditsInWei = ethers.parseEther(carbonCreditsInTons.toString());
         const mintTx = await this.tokenContract.mintAdditionalCredits(projectId, ngoAddress, carbonCreditsInWei, { nonce: currentNonce });
         console.log(`Additional minting transaction hash: ${mintTx.hash}`);

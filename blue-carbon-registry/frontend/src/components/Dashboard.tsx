@@ -10,9 +10,10 @@ interface DashboardProps {
     isOwner: boolean;
   };
   contracts: any;
+  onTokensMinted?: () => Promise<void>;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user, contracts }) => {
+const Dashboard: React.FC<DashboardProps> = ({ user, contracts, onTokensMinted }) => {
   const [stats, setStats] = useState({
     totalProjects: 0,
     totalTokens: '0',

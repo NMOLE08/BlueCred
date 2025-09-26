@@ -675,6 +675,8 @@ body {
 
 .project-actions {
   margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .verify-btn {
@@ -693,12 +695,37 @@ body {
   background: #218838;
 }
 
+.review-btn {
+  background: #6d28d9;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.review-btn:hover {
+  background: #5b21b6;
+}
+
 .project-status {
   margin-top: 1rem;
   padding: 1rem;
   background: #d4edda;
   border-radius: 6px;
   border: 1px solid #c3e6cb;
+}
+
+.project-status .review-btn {
+  margin-top: 0.5rem;
+  background: #17a2b8;
+}
+
+.project-status .review-btn:hover {
+  background: #138496;
 }
 
 .success-text {

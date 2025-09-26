@@ -74,8 +74,131 @@
     </main>
 
     <script>
+        // Function to load project data
+        async function loadProjectData() {
+            // Get project ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('projectId');
+
+            // Always reflect projectId in the input if present
+            const projectIdInput = document.getElementById('project-id');
+            if (projectIdInput && projectId) {
+                projectIdInput.value = projectId;
+            }
+
+            // Always update Check Carbons link if projectId present
+            const checkCarbonsBtn = document.getElementById('check-carbons-btn');
+            if (checkCarbonsBtn && projectId) {
+                checkCarbonsBtn.href = `http://127.0.0.1:5002/?projectId=${projectId}`;
+            }
+
+            // Try to get project data from localStorage (works only if same origin)
+            let project = null;
+            try {
+                const projectData = localStorage.getItem('currentProject');
+                if (projectData) {
+                    const parsed = JSON.parse(projectData);
+                    // If localStorage has a different project, prefer URL projectId
+                    if (!projectId || (parsed && parsed.projectId === projectId)) {
+                        project = parsed;
+                    }
+                }
+            } catch (e) {
+                // ignore JSON/localStorage errors
+            }
+
+            // If no local project data and we have a projectId, fetch from backend API
+            if (!project && projectId) {
+                try {
+                    const resp = await fetch(`http://127.0.0.1:5001/api/verification/project/${encodeURIComponent(projectId)}`);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data && data.success && data.data && data.data.project) {
+                            const p = data.data.project;
+                            // Normalize to the structure used in this page
+                            project = {
+                                projectId: p.projectId,
+                                projectName: p.projectName || 'Unknown Project',
+                                status: p.verificationStatus || 'pending',
+                                ngo: (p.ngoId && (p.ngoId.organizationName || p.ngoId.contactEmail)) || 'Organization',
+                                location: p.projectLocation || 'India',
+                                carbonCredits: (p.mlAnalysis && p.mlAnalysis.carbonCreditsCalculated) || 0,
+                                submissionDate: p.createdAt || new Date().toISOString()
+                            };
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Failed to fetch project from backend:', err);
+                }
+            }
+
+            // Populate UI if we have project data
+            if (project) {
+                // Ensure the Project ID input is filled even if URL lacked projectId
+                const projectIdInput2 = document.getElementById('project-id');
+                if (projectIdInput2 && (!projectIdInput2.value || projectIdInput2.value.trim() === '')) {
+                    projectIdInput2.value = project.projectId || '';
+                }
+
+                // Ensure Check Carbons link also uses the resolved projectId
+                const checkBtn2 = document.getElementById('check-carbons-btn');
+                if (checkBtn2 && project.projectId) {
+                    checkBtn2.href = `http://127.0.0.1:5002/?projectId=${encodeURIComponent(project.projectId)}`;
+                }
+                const projectDetailsBox = document.querySelector('.container1 .box');
+                if (projectDetailsBox) {
+                    projectDetailsBox.innerHTML = `
+                        <div class="project-info">
+                            <h4>Project Information</h4>
+                            <p><strong>Project ID:</strong> ${project.projectId}</p>
+                            <p><strong>Project Name:</strong> ${project.projectName}</p>
+                            <p><strong>Status:</strong> ${project.status}</p>
+                            <p><strong>NGO:</strong> ${project.ngo}</p>
+                            <p><strong>Location:</strong> ${project.location}</p>
+                            <p><strong>Submission Date:</strong> ${new Date(project.submissionDate).toLocaleDateString()}</p>
+                        </div>
+                    `;
+                }
+
+                const estimationsBox = document.querySelectorAll('.container1 .box')[1];
+                if (estimationsBox) {
+                    estimationsBox.innerHTML = `
+                        <div class="estimations-info">
+                            <h4>Carbon Credit Estimations</h4>
+                            <p><strong>Estimated Carbon Credits:</strong> ${project.carbonCredits} NCT</p>
+                            <p><strong>CO2 Equivalent:</strong> ${(project.carbonCredits * 3994).toLocaleString()} tons</p>
+                            <p><strong>Verification Status:</strong> <span class="status-badge">${project.status}</span></p>
+                            <p><strong>Confidence Score:</strong> 85%</p>
+                        </div>
+                    `;
+                }
+
+                const verifyBtn = document.getElementById('verify-btn');
+                if (verifyBtn) {
+                    verifyBtn.disabled = false;
+                    verifyBtn.style.background = '#10b981';
+                    verifyBtn.style.cursor = 'pointer';
+                }
+                return;
+            }
+
+            // Fallback: show empty state
+            const projectDetailsBox = document.querySelector('.container1 .box');
+            if (projectDetailsBox) {
+                projectDetailsBox.innerHTML = '<p class="no-data">No project data available. Please open this page via the DApp or the verification page so the projectId is included.</p>';
+            }
+
+            const estimationsBox = document.querySelectorAll('.container1 .box')[1];
+            if (estimationsBox) {
+                estimationsBox.innerHTML = '<p class="no-data">No estimation data available.</p>';
+            }
+        }
+
         // Dropdown functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Load project data when page loads
+            loadProjectData();
+            
             const dropdowns = document.querySelectorAll('.dropdown');
             const verifyBtn = document.getElementById('verify-btn');
             const projectIdInput = document.getElementById('project-id');
@@ -143,10 +266,20 @@
                     verifyBtn.textContent = 'Verifying...';
                     verifyBtn.disabled = true;
                     verifyBtn.style.background = '#a1a1aa';
+                    // Determine approved credits if outcome is approved
+                    let approvedCredits = 0;
+                    try {
+                      const ls = localStorage.getItem('currentProject');
+                      if (ls) {
+                        const p = JSON.parse(ls);
+                        if (p && typeof p.carbonCredits === 'number') approvedCredits = p.carbonCredits;
+                      }
+                    } catch {}
+
                     const resp = await fetch(`http://127.0.0.1:5001/api/verification/project/${encodeURIComponent(projectId)}/verify`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status: 'approved', comments: 'Approved via NCCR report page', approvedCarbonCredits: 0 })
+                        body: JSON.stringify({ status: 'approved', comments: 'Approved via NCCR report page', approvedCarbonCredits: approvedCredits })
                     });
                     const data = await resp.json();
                     if (resp.ok && data.success) {

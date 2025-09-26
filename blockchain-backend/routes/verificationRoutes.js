@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
 const Admin = require('../models/Admin');
+const NGO = require('../models/NGO');
 const { authenticateToken } = require('../middleware/auth');
 
 // Get all projects pending verification
@@ -79,12 +80,24 @@ router.post('/project/:projectId/verify', async (req, res) => {
       });
     }
 
-    const project = await Project.findOne({ projectId });
+    let project = await Project.findOne({ projectId });
     if (!project) {
-      return res.status(404).json({
-        success: false,
-        message: 'Project not found'
+      // Auto-create a minimal project so website verification can proceed
+      // Find any NGO to attach the project to
+      const firstNGO = await NGO.findOne({});
+      if (!firstNGO) {
+        return res.status(400).json({ success: false, message: 'No NGOs found to attach project.' });
+      }
+
+      project = new Project({
+        projectId,
+        ngoId: firstNGO._id,
+        projectName: `Website Project ${projectId}`,
+        projectDescription: 'Created via NCCR report verification flow.',
+        projectLocation: 'India',
+        projectType: 'other'
       });
+      await project.save();
     }
 
     // Find or create admin/verifier

@@ -117,6 +117,60 @@ const seedDemoProject = async (req, res) => {
   }
 };
 
+// Create a pre-approved demo project for biomass frontend testing
+const createBiomassDemoProject = async (req, res) => {
+  try {
+    const secret = req.headers['x-ml-secret'];
+    if (!process.env.ML_WEBHOOK_SECRET || secret !== process.env.ML_WEBHOOK_SECRET) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    // Check if biomass demo project already exists
+    const existingProject = await Project.findOne({ projectId: 'BIOMASS_DEMO_PROJECT' });
+    if (existingProject) {
+      return res.json({ 
+        success: true, 
+        message: 'Biomass demo project already exists',
+        data: { 
+          projectId: existingProject.projectId,
+          verificationStatus: existingProject.verificationStatus
+        }
+      });
+    }
+
+    // Find any NGO to attach the project to
+    const firstNGO = await NGO.findOne({});
+    if (!firstNGO) {
+      return res.status(400).json({ success: false, message: 'No NGOs found to attach demo project.' });
+    }
+
+    const project = new Project({
+      projectId: 'BIOMASS_DEMO_PROJECT',
+      ngoId: firstNGO._id,
+      projectName: 'Biomass Frontend Demo Project',
+      projectDescription: 'Pre-approved demo project for biomass frontend tokenization testing.',
+      projectLocation: 'Demo Location',
+      projectType: 'mangrove',
+      verificationStatus: 'approved' // Pre-approved for testing
+    });
+    await project.save();
+
+    await NGO.findByIdAndUpdate(firstNGO._id, { $inc: { totalProjects: 1 } });
+
+    res.json({ 
+      success: true, 
+      message: 'Biomass demo project created and approved',
+      data: { 
+        projectId: project.projectId,
+        verificationStatus: project.verificationStatus
+      }
+    });
+  } catch (error) {
+    console.error('createBiomassDemoProject error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
 // ML webhook to ingest results in kilograms, convert to tonnes, and (optionally) mint tokens
 // Auth: expects 'x-ml-secret' header to match process.env.ML_WEBHOOK_SECRET
 const ingestMLWebhook = async (req, res) => {
@@ -132,7 +186,6 @@ const ingestMLWebhook = async (req, res) => {
       confidenceScore,     // 0..1
       modelVersion,        // string
       rawData,             // any
-      autoApprove = false, // boolean
       recipientAddress     // optional string (NGO/company wallet)
     } = req.body;
 
@@ -140,10 +193,10 @@ const ingestMLWebhook = async (req, res) => {
       return res.status(400).json({ success: false, message: 'carbonKg must be a positive number' });
     }
 
-    // Convert kg -> tonnes
-    const tonnes = carbonKg / 1000; // 1 tonne = 1000 kg
-    // Current blockchain service assumes whole-number tokens; round down to avoid fractional issues
-    const tokensWhole = Math.floor(tonnes);
+    // Convert kg -> tonnes (1 tonne = 1000 kg, 1 tonne = 1 NCT)
+    const tonnes = carbonKg / 1000;
+    // Use exact value for NCT tokens (1 tonne = 1 NCT)
+    const tokensWhole = Math.round(tonnes * 100) / 100; // Round to 2 decimal places for precision
 
     let project = await Project.findOne({ projectId }).populate('ngoId', 'organizationName metamaskAccount.address');
     if (!project) {
@@ -180,23 +233,21 @@ const ingestMLWebhook = async (req, res) => {
       inputCarbonKg: carbonKg,
       calculatedTonnes: tonnes
     };
-    // Only set to pending if not already finalized (avoid downgrading approved/rejected)
-    if (!['approved', 'rejected'].includes(project.verificationStatus)) {
-      project.verificationStatus = 'pending';
-    }
+    // Keep existing verification status - approval is handled by NCCR Authorities
+    console.log(`[DEBUG] Project verification status: ${project.verificationStatus}`);
 
     await project.save();
 
     let mintResult = null;
     
-    // Check if project is verified before minting
-    if (autoApprove && tokensWhole > 0) {
+    // Check if project is approved before minting
+    if (project.verificationStatus === 'approved' && tokensWhole > 0) {
       // Reload project to get the latest verification status from database
       const currentProject = await Project.findOne({ projectId }).populate('ngoId', 'organizationName metamaskAccount.address');
       
       console.log(`[DEBUG] Project ${projectId} verification status: ${currentProject.verificationStatus}`);
       
-      // Strict check: only allow minting if explicitly approved
+      // Double-check that project is still approved
       if (currentProject.verificationStatus !== 'approved') {
         return res.status(400).json({
           success: false,
@@ -216,7 +267,7 @@ const ingestMLWebhook = async (req, res) => {
 
         const toAddress = recipientAddress || (currentProject.ngoId?.metamaskAccount?.address);
         if (!toAddress) {
-          throw new Error('Recipient address is required for auto-approve minting');
+          throw new Error('Recipient address is required for minting');
         }
 
         // Mint tokens to recipient (uses existing service which expects integer tokens)
@@ -620,6 +671,7 @@ module.exports = {
   ingestMLWebhook,
   getProjectSummaries,
   seedDemoProject,
+  createBiomassDemoProject,
   verifyProject,
   getPendingVerification,
   getVerificationLogs

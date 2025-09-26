@@ -24,7 +24,9 @@ const CARBON_TOKEN_ABI = [
   "function getRetiredTokens(address account) view returns (uint256)",
   "event ProjectCreated(string indexed projectId, string projectName, string ngoName, uint256 carbonCredits)",
   "event TokensMinted(string indexed projectId, address indexed ngo, uint256 amount)",
-  "event TokensRetired(address indexed company, uint256 amount, string reason)"
+  "event TokensRetired(address indexed company, uint256 amount, string reason)",
+  // Standard ERC20 Transfer event (required for on('Transfer', ...))
+  "event Transfer(address indexed from, address indexed to, uint256 value)"
 ];
 
 const MARKETPLACE_ABI = [
@@ -58,6 +60,8 @@ function App() {
   const [contracts, setContracts] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [config, setConfig] = useState<ContractConfig | null>(null);
+  const [lastTokenBalance, setLastTokenBalance] = useState<string>('0');
+  const [balanceCheckInterval, setBalanceCheckInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Load configuration on app start
   useEffect(() => {
@@ -127,6 +131,57 @@ function App() {
     
     initializeContracts();
   }, [user, config]);
+
+  // Subscribe to token events to keep balances in sync in real time
+  useEffect(() => {
+    if (!contracts || !user) return;
+
+    const { carbonToken } = contracts;
+    if (!carbonToken) return;
+
+    const onTokensMinted = async (projectId: string, ngo: string, amount: any, event: any) => {
+      try {
+        console.log('⚡ TokensMinted event:', { projectId, ngo, amount: amount?.toString?.() });
+        if (ngo && ngo.toLowerCase() === user.address.toLowerCase()) {
+          await refreshUserData();
+        }
+      } catch (e) {
+        console.warn('TokensMinted handler failed', e);
+      }
+    };
+
+    const onTransfer = async (from: string, to: string, value: any, event: any) => {
+      try {
+        // Refresh if the connected user is sender or recipient
+        if (
+          (to && to.toLowerCase() === user.address.toLowerCase()) ||
+          (from && from.toLowerCase() === user.address.toLowerCase())
+        ) {
+          console.log('⚡ Transfer event affecting current user, refreshing...');
+          await refreshUserData();
+        }
+      } catch (e) {
+        console.warn('Transfer handler failed', e);
+      }
+    };
+
+    try {
+      carbonToken.on('TokensMinted', onTokensMinted);
+      carbonToken.on('Transfer', onTransfer);
+      console.log('📡 Subscribed to TokensMinted and Transfer events');
+    } catch (e) {
+      console.warn('Failed to subscribe to events', e);
+    }
+
+    // Cleanup listeners on unmount or when dependencies change
+    return () => {
+      try {
+        carbonToken.off('TokensMinted', onTokensMinted);
+        carbonToken.off('Transfer', onTransfer);
+        console.log('🧹 Unsubscribed from contract events');
+      } catch {}
+    };
+  }, [contracts, user]);
 
   // Listen for account changes
   useEffect(() => {
@@ -396,6 +451,70 @@ function App() {
     }
   };
 
+  // Function to check for token balance changes (for external minting detection)
+  const checkForBalanceChanges = async () => {
+    if (!user || !config) return;
+    
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum!);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      
+      // Get current token balance
+      const functionSelector = '0x70a08231'; // balanceOf(address)
+      const paddedAddress = address.slice(2).padStart(64, '0');
+      const callData = functionSelector + paddedAddress;
+      
+      const response = await window.ethereum!.request({
+        method: 'eth_call',
+        params: [{
+          to: config.contracts.carbonCreditToken,
+          data: callData
+        }, 'latest']
+      });
+      
+      const currentBalance = ethers.formatEther(BigInt(response));
+      
+      // Check if balance has changed
+      if (currentBalance !== lastTokenBalance && currentBalance !== user.tokenBalance) {
+        console.log('🔄 Balance change detected:', {
+          last: lastTokenBalance,
+          current: currentBalance,
+          user: user.tokenBalance
+        });
+        
+        // Update the last known balance
+        setLastTokenBalance(currentBalance);
+        
+        // Refresh user data to update the header
+        await refreshUserData();
+      }
+    } catch (error) {
+      console.error('Error checking balance changes:', error);
+    }
+  };
+
+  // Set up periodic balance checking when user is connected
+  useEffect(() => {
+    if (user && config) {
+      // Initialize last known balance
+      setLastTokenBalance(user.tokenBalance);
+      
+      // Set up periodic checking every 5 seconds
+      const interval = setInterval(checkForBalanceChanges, 5000);
+      setBalanceCheckInterval(interval);
+      
+      console.log('🔄 Started periodic balance checking');
+    }
+    
+    return () => {
+      if (balanceCheckInterval) {
+        clearInterval(balanceCheckInterval);
+        console.log('🔄 Stopped periodic balance checking');
+      }
+    };
+  }, [user, config]);
+
   if (!user) {
     return (
       <div className="App">
@@ -469,10 +588,10 @@ function App() {
 
       <main className="main-content">
         {activeTab === 'dashboard' && (
-          <Dashboard user={user} contracts={contracts} />
+          <Dashboard user={user} contracts={contracts} onTokensMinted={refreshUserData} />
         )}
         {activeTab === 'projects' && (
-          <ProjectManagement user={user} contracts={contracts} />
+          <ProjectManagement user={user} contracts={contracts} onTokensMinted={refreshUserData} />
         )}
         {activeTab === 'marketplace' && (
           <Marketplace user={user} contracts={contracts} />

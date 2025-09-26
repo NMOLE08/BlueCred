@@ -9,6 +9,7 @@ interface ProjectManagementProps {
     isOwner: boolean;
   };
   contracts: any;
+  onTokensMinted?: () => Promise<void>;
 }
 
 interface Project {
@@ -21,7 +22,7 @@ interface Project {
   isRetired: boolean;
 }
 
-const ProjectManagement: React.FC<ProjectManagementProps> = ({ user, contracts }) => {
+const ProjectManagement: React.FC<ProjectManagementProps> = ({ user, contracts, onTokensMinted }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -127,11 +128,34 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ user, contracts }
       // Reload projects
       loadProjects();
       
+      // Refresh user data to update header token balance
+      if (onTokensMinted) {
+        await onTokensMinted();
+      }
+      
       alert('Project verified and tokens minted!');
       
     } catch (error: any) {
       alert('Error verifying project: ' + error.message);
     }
+  };
+
+  const reviewProject = (project: Project) => {
+    // Store project data in localStorage
+    const projectData = {
+      projectId: project.projectId,
+      projectName: project.projectName,
+      ngo: project.ngoName,
+      carbonCredits: parseInt(project.carbonCredits),
+      status: project.isVerified ? 'verified' : 'pending',
+      location: 'India', // Default location
+      submissionDate: new Date(project.timestamp).toISOString()
+    };
+    
+    localStorage.setItem('currentProject', JSON.stringify(projectData));
+    
+    // Open report page in new tab with project ID
+    window.open(`http://localhost:8000/report.html?projectId=${project.projectId}`, '_blank');
   };
 
   if (loading) {
@@ -284,6 +308,12 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ user, contracts }
                     >
                       Verify & Mint Tokens
                     </button>
+                    <button 
+                      onClick={() => reviewProject(project)}
+                      className="review-btn"
+                    >
+                      Review Project
+                    </button>
                   </div>
                 )}
                 
@@ -292,6 +322,12 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ user, contracts }
                     <p className="success-text">
                       ✅ Project verified and tokens minted to NGO wallet
                     </p>
+                    <button 
+                      onClick={() => reviewProject(project)}
+                      className="review-btn"
+                    >
+                      View Report
+                    </button>
                   </div>
                 )}
               </div>
