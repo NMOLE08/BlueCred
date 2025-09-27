@@ -82,8 +82,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/logo.png', // Placeholder for the logo
+                      'assets/images/app_logo.png',
                       height: 50,
+                      errorBuilder: (context, error, stackTrace) {
+                        debugPrint('Logo load error: $error');
+                        return const SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Icon(Icons.image_not_supported, color: Colors.white),
+                        );
+                      },
                     ),
                     const SizedBox(width: 10),
                     Text(

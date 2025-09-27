@@ -30,13 +30,17 @@ final theme = ThemeData(
 
 void main() {
   runApp(const App());
-}
+} 
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(theme: theme, home: const WelcomeScreen());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: theme, 
+      home: const WelcomeScreen()
+    );
   }
 }

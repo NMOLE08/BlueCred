@@ -82,9 +82,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/logo.png', // Placeholder for the logo
-                      height: 50,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset('assets/images/app_logo.png', height: 50),
                     ),
                     const SizedBox(width: 10),
                     Text(

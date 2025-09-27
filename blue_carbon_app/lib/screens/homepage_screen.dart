@@ -3,6 +3,8 @@ import 'package:blue_carbon_app/data/dummy_project.dart';
 import 'package:blue_carbon_app/models/project.dart';
 import 'package:blue_carbon_app/screens/add_data_screen.dart';
 import 'package:blue_carbon_app/services/project_service.dart';
+import 'package:blue_carbon_app/screens/profile_page.dart';
+import 'package:blue_carbon_app/services/auth_service.dart';
 
 class HomepageScreen extends StatefulWidget {
   const HomepageScreen({super.key});
@@ -53,9 +55,11 @@ class _HomepageScreenState extends State<HomepageScreen> {
 
     // Check which item was tapped and navigate accordingly
     if (index == 1) {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (context) => const AddDataScreen()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddDataScreen()));
+    } else if (index == 2) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const ProfilePage()),
+      );
     }
     // You can add more navigation logic for other indices here
   }
@@ -63,6 +67,71 @@ class _HomepageScreenState extends State<HomepageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 70), // Position above bottom nav
+        child: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                return Container(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  padding: const EdgeInsets.all(20),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Notifications',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      const Expanded(
+                        child: Center(
+                          child: Text(
+                            'No new notifications',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+          backgroundColor: const Color(0xFF7B61FF),
+          foregroundColor: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: const Icon(Icons.notifications_none, size: 30),
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -83,14 +152,18 @@ class _HomepageScreenState extends State<HomepageScreen> {
                   children: [
                     Row(
                       children: [
-                        Image.asset(
-                          'assets/logo.png', // Placeholder for the logo
-                          height: 40,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset('assets/images/app_logo.png', height: 40),
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        const Text(
                           'BlueCred',
-                          style: Theme.of(context).textTheme.headlineLarge,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -123,17 +196,46 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 ),
                 const SizedBox(height: 30),
                 // Welcome message and user name
-                Text(
-                  'Hello, Anmol k.',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'My Projects',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                const Text(
+                  'Hello, NGO 1',
+                  style: TextStyle(
                     color: Colors.white,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    const Text(
+                      'My Projects',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const AddDataScreen(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7B61FF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                      child: const Text('Add New Project'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 // Project Cards List
@@ -215,17 +317,19 @@ class _ProjectCard extends StatelessWidget {
                 children: [
                   Text(
                     project.name,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: const TextStyle(
                       color: Colors.black,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     project.location,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -233,7 +337,11 @@ class _ProjectCard extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // TODO: Add "Add data" functionality
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const AddDataScreen(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF005AC6),
